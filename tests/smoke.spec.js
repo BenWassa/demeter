@@ -5,12 +5,37 @@ async function ready(page) {
   await page.waitForFunction(() => document.documentElement.classList.contains('v2-ready'));
 }
 
+async function overflowReport(page) {
+  return page.evaluate(() => {
+    const viewport = document.documentElement.clientWidth;
+    const total = document.documentElement.scrollWidth;
+    const offenders = [...document.querySelectorAll('body *')]
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        return {
+          tag: el.tagName.toLowerCase(),
+          id: el.id || '',
+          cls: typeof el.className === 'string' ? el.className.slice(0, 100) : '',
+          left: Math.round(r.left),
+          right: Math.round(r.right),
+          width: Math.round(r.width),
+          scrollWidth: el.scrollWidth
+        };
+      })
+      .filter((x) => x.left < -1 || x.right > viewport + 1)
+      .sort((a, b) => Math.max(b.right - viewport, -b.left) - Math.max(a.right - viewport, -a.left))
+      .slice(0, 20);
+    return { viewport, total, overflow: total - viewport, offenders };
+  });
+}
+
 test('core Demeter planning paths work', async ({ page }, testInfo) => {
   await ready(page);
   await expect(page.getByRole('heading', { level:1 })).toContainText('Design the land around the life');
 
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  expect(overflow).toBeLessThanOrEqual(1);
+  const report = await overflowReport(page);
+  if (report.overflow > 1) console.log('OVERFLOW_DIAGNOSTIC', JSON.stringify(report));
+  expect(report.overflow).toBeLessThanOrEqual(1);
 
   await page.getByRole('button', { name:'Fully remote' }).click();
   await expect(page.locator('#fit-title')).toBeVisible();
