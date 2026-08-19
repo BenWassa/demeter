@@ -80,8 +80,8 @@ const systemData = {
 
 const acreageData = {
   3: {
-    label: '3-acre concept',
-    thesis: 'Enough for a comfortable rural home, serious garden, small orchard, chickens, workshop, and privacy — if the parcel is well laid out.',
+    label: '3-acre capacity',
+    thesis: 'Compared with the fixed 10-acre reference drawing, three well-arranged acres can still hold a comfortable rural home, serious garden, small orchard, chickens, workshop, and privacy. A distinct 3-acre plan is a later blueprint deliverable.',
     list: [
       ['1 ac', 'house, drive, septic, well, utility area'],
       ['0.5–1 ac', 'garden, greenhouse, orchard, compost'],
@@ -90,8 +90,8 @@ const acreageData = {
     ]
   },
   10: {
-    label: '10-acre concept',
-    thesis: 'Enough room for serious food production, a shop, optional pasture, and a meaningful privacy/woodlot buffer without requiring a full farm operation.',
+    label: '10-acre reference plan',
+    thesis: 'The drawing at left is the authored reference: enough room for serious food production, a shop, optional pasture, and a meaningful privacy/woodlot buffer without requiring a full farm operation.',
     list: [
       ['1–2 ac', 'house, drive, septic, garden, shop'],
       ['2–3 ac', 'orchard, greenhouse, intensive food zone'],
@@ -100,8 +100,8 @@ const acreageData = {
     ]
   },
   20: {
-    label: '20-acre concept',
-    thesis: 'A real smallholding scale: enough room for livestock, meaningful woodlot, larger field uses, habitat, and future buildings — with a matching increase in maintenance.',
+    label: '20-acre capacity',
+    thesis: 'Compared with the fixed 10-acre reference drawing, twenty acres moves into true smallholding territory: more livestock, woodlot, field, habitat, and future-building options — alongside much more maintenance. A distinct 20-acre plan is a later blueprint deliverable.',
     list: [
       ['2 ac', 'household core + infrastructure'],
       ['3–4 ac', 'orchard, market-scale garden, greenhouse'],
@@ -111,13 +111,15 @@ const acreageData = {
   }
 };
 
-function setPressedState(buttons, activeButton) {
+function setSelectionState(buttons, activeButton) {
   buttons.forEach((button) => {
     const active = button === activeButton;
     button.classList.toggle('is-active', active);
-    button.setAttribute('aria-pressed', String(active));
+
     if (button.getAttribute('role') === 'tab') {
       button.setAttribute('aria-selected', String(active));
+    } else {
+      button.setAttribute('aria-pressed', String(active));
     }
   });
 }
@@ -186,15 +188,12 @@ function updateAcreage(acres) {
     item.append(strong, span);
     list.append(item);
   });
-
-  const canvas = document.querySelector('.blueprint-canvas');
-  canvas.dataset.blueprint = String(acres);
 }
 
 const regionButtons = [...document.querySelectorAll('[data-region]')];
 regionButtons.forEach((button) => {
   button.addEventListener('click', () => {
-    setPressedState(regionButtons, button);
+    setSelectionState(regionButtons, button);
     updateRegion(button.dataset.region);
   });
 });
@@ -202,7 +201,7 @@ regionButtons.forEach((button) => {
 const systemButtons = [...document.querySelectorAll('[data-system]')];
 systemButtons.forEach((button) => {
   button.addEventListener('click', () => {
-    setPressedState(systemButtons, button);
+    setSelectionState(systemButtons, button);
     updateSystem(button.dataset.system);
   });
 });
@@ -212,7 +211,7 @@ acreageButtons.forEach((button) => {
   if (!button.hasAttribute('aria-pressed')) button.setAttribute('aria-pressed', 'false');
 
   button.addEventListener('click', () => {
-    setPressedState(acreageButtons, button);
+    setSelectionState(acreageButtons, button);
     updateAcreage(button.dataset.acres);
   });
 });
