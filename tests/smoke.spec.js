@@ -91,3 +91,18 @@ test('visual atlas loads real assets and accessible zoom controls work', async (
   await expectNoDocumentOverflow(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-visuals.png`,fullPage:true});
 });
+
+test('mobile visual atlas pinch gesture zooms directly', async ({ page, context },testInfo) => {
+  test.skip(testInfo.project.name!=='mobile-chromium','Touch gesture release gate');
+  await ready(page,'/visuals.html');
+  await page.waitForSelector('#visual-atlas');
+  await page.getByRole('button',{name:/Open Region comparison full screen/}).click();
+  const image=page.locator('#visual-lightbox-image');await expect.poll(async()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+  const box=await page.locator('#visual-stage').boundingBox();expect(box).not.toBeNull();
+  const cx=box.x+box.width/2,cy=box.y+box.height/2;
+  const client=await context.newCDPSession(page);
+  await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx-55,y:cy,id:0},{x:cx+55,y:cy,id:1}]});
+  await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx-105,y:cy,id:0},{x:cx+105,y:cy,id:1}]});
+  await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await expect.poll(async()=>Number((await page.locator('#visual-zoom-level').textContent()).replace('%',''))).toBeGreaterThan(150);
+});
