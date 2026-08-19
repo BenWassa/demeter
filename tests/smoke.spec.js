@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 async function ready(page) {
   await page.goto('/');
   await page.waitForFunction(() => document.documentElement.classList.contains('v2-ready'));
+  await page.waitForSelector('#visual-atlas');
 }
 
 async function overflowReport(page) {
@@ -67,4 +68,34 @@ test('tabs support keyboard navigation', async ({ page }) => {
   const second = page.getByRole('tab', { name:/Fraser Valley/ });
   await expect(second).toBeFocused();
   await expect(second).toHaveAttribute('aria-selected','true');
+});
+
+test('visual atlas loads real assets, opens full screen and zoom controls work', async ({ page }) => {
+  await ready(page);
+  const thumbs = page.locator('.visual-card img');
+  await expect(thumbs).toHaveCount(9);
+  const srcs = await thumbs.evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')));
+  const decoded = await page.evaluate(async (paths) => Promise.all(paths.map((src) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ src, ok: img.naturalWidth > 0, width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve({ src, ok: false, width: 0, height: 0 });
+    img.src = src;
+  }))), srcs);
+  expect(decoded.filter((asset) => !asset.ok), JSON.stringify(decoded, null, 2)).toEqual([]);
+
+  const card = page.getByRole('button', { name:/Open Region comparison full screen/ });
+  await card.click();
+  const dialog = page.locator('#visual-lightbox');
+  const image = page.locator('#visual-lightbox-image');
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('#visual-lightbox-heading')).toHaveText('Region comparison');
+  await expect.poll(async () => image.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
+  await page.getByRole('button', { name:'Zoom in' }).click();
+  await expect(page.locator('#visual-zoom-level')).toHaveText('125%');
+  await page.keyboard.press('0');
+  await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
+  await page.getByRole('button', { name:'Close full-screen image' }).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(card).toBeFocused();
 });
