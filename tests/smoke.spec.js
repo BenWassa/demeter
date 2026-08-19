@@ -26,6 +26,13 @@ test('home is a focused navigation hub', async ({ page },testInfo) => {
   await page.screenshot({path:`artifacts/${testInfo.project.name}-home.png`,fullPage:true});
 });
 
+test('legacy section links route to focused workspaces', async ({ page }) => {
+  await page.goto('/#blueprint');
+  await page.waitForURL(/land\.html#blueprint$/);
+  await page.waitForFunction(() => document.documentElement.classList.contains('v2-ready'));
+  await expect(page.locator('#blueprint')).toBeVisible();
+});
+
 test('regions workspace tunes fit and switches evidence', async ({ page }) => {
   await ready(page,'/regions.html');
   await page.getByRole('button',{name:'Fully remote'}).click();
