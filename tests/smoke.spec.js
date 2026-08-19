@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 async function ready(page) {
   await page.goto('/');
   await page.waitForFunction(() => document.documentElement.classList.contains('v2-ready'));
+  await page.waitForSelector('#visual-atlas');
 }
 
 async function overflowReport(page) {
@@ -67,4 +68,21 @@ test('tabs support keyboard navigation', async ({ page }) => {
   const second = page.getByRole('tab', { name:/Fraser Valley/ });
   await expect(second).toBeFocused();
   await expect(second).toHaveAttribute('aria-selected','true');
+});
+
+test('visual atlas opens full screen and zoom controls work', async ({ page }) => {
+  await ready(page);
+  const card = page.getByRole('button', { name:/Open Region comparison full screen/ });
+  await card.click();
+  const dialog = page.locator('#visual-lightbox');
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('#visual-lightbox-heading')).toHaveText('Region comparison');
+  await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
+  await page.getByRole('button', { name:'Zoom in' }).click();
+  await expect(page.locator('#visual-zoom-level')).toHaveText('125%');
+  await page.keyboard.press('0');
+  await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
+  await page.getByRole('button', { name:'Close full-screen image' }).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(card).toBeFocused();
 });
