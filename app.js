@@ -19,7 +19,10 @@ if (legacyTarget) {
     .then(() => import('./src/visuals.js'))
     .then((visualModule) => {
       const correctedTenAcre = visualModule.visuals.find((visual) => visual.id === 'acre10');
-      if (correctedTenAcre) correctedTenAcre.src = 'assets/visual-guides/blueprint-10-acre.png';
+      if (correctedTenAcre) {
+        correctedTenAcre.src = 'assets/visual-guides/blueprint-10-acre.png';
+        correctedTenAcre.wide = true;
+      }
 
       const preview = document.querySelector('.route-feature img');
       if (preview) preview.src = 'assets/visual-guides/blueprint-10-acre.png';
@@ -33,7 +36,12 @@ if (legacyTarget) {
       visualModule.initVisuals();
 
       // The current 20-acre image is known to be semantically wrong. Keep it out of the live atlas until its replacement is supplied.
-      document.querySelector('[data-visual="acre20"]')?.setAttribute('hidden', '');
+      const incorrectTwentyAcre = document.querySelector('[data-visual="acre20"]');
+      if (incorrectTwentyAcre) {
+        incorrectTwentyAcre.hidden = true;
+        incorrectTwentyAcre.setAttribute('aria-hidden', 'true');
+        incorrectTwentyAcre.style.display = 'none';
+      }
     })
     .catch((error) => {
       console.error('Demeter enhancement failed; static atlas remains available.', error);
