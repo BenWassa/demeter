@@ -17,13 +17,7 @@ if (legacyTarget) {
   import('./src/app-v2.js')
     .then(() => import('./src/a11y.js'))
     .then(() => import('./src/visuals.js'))
-    .then((visualModule) => {
-      const style = document.createElement('link');
-      style.rel = 'stylesheet';
-      style.href = 'src/visual-guides.css';
-      document.head.append(style);
-      visualModule.initVisuals();
-    })
+    .then((visualModule) => visualModule.initVisuals())
     .catch((error) => {
       console.error('Demeter enhancement failed; static atlas remains available.', error);
       document.documentElement.classList.remove('v2-loading');
