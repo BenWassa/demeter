@@ -1,98 +1,82 @@
 # Project Demeter — Build Status
 
 **Release branch:** `main`  
-**PR:** #1 — merged 2026-08-19  
-**V1 merge commit:** `d51279a9bf6ceb72d84b458f9f36eced6cbbd806`  
+**Working PR:** #3 — `agent/mobile-ia-pass` → `main`  
 **Last updated:** 2026-08-19  
-**Release state:** V1 merged; pre-merge release gate green; GitHub Pages workflow shipped. Live Pages endpoint verification is not exposed by the available GitHub connector and is therefore not claimed here.
+**Current release:** V1.1 on `main`; V1.2 mobile/IA release candidate in PR #3.
 
-## Objective
+## Current product
 
-Ship a coherent end-to-end V1 of Project Demeter: an interactive Canadian homestead field atlas that combines regional comparison, systems literacy, land-use blueprints, food/livestock planning, property archetypes, and a phased path toward a comfortable semi-off-grid life.
+Project Demeter is a responsive Canadian homestead field atlas for comparing regions, understanding critical household systems, sizing land, planning food/livestock depth, comparing acquisition routes, and phasing a comfortable semi-off-grid transition.
 
 ## Delivery status
 
 | Workstream | Status | Result |
 |---|---|---|
-| Product definition | ✅ | `PRODUCT.md` is the durable product source of truth. |
-| PRD / IA | ✅ | `docs/PRD.md` defines product scope, information architecture and roadmap. |
-| Research model | ✅ | `docs/RESEARCH_PLAN.md` defines evidence classes and refresh rules. |
-| Current regional evidence | ✅ | `docs/REGION_RESEARCH.md` + live evidence for SW Ontario, Fraser Valley and Vancouver Island, refreshed 2026-08-19. |
-| Visual system | ✅ | Canadian field-atlas world implemented: documentary landscape + survey precision + field-guide clarity. |
-| Personal Fit Lab | ✅ | Career anchor + five weighted priorities produce transparent three-region ranking. |
-| Region explorer | ✅ | Climate/access/market evidence, fit score, capability bars, watch items and source links. |
-| Systems explorer | ✅ | Water, wastewater, power and heat dependency schematics with burden, consequence and professional boundary. |
-| Blueprint Lab | ✅ | Distinct authored 3-, 10- and 20-acre plans with toggleable food/livestock/infrastructure/privacy layers. |
-| Food & livestock | ✅ | Three production levels expose land allocation, workload, livestock fit and friction. |
-| Property archetypes | ✅ | Fixer acreage, ready homestead and raw-land/build routes compared. |
-| Roadmap | ✅ | Remote-work optionality → regional testing → acquisition → resilience → optional production depth. |
-| Responsive / accessibility | ✅ | Desktop/tablet/mobile/short-landscape adaptation; keyboard tab navigation; reduced motion; forced colors; focus/touch hardening. |
-| Progressive failure mode | ✅ | Existing static atlas remains usable if V2 JavaScript enhancement fails. |
-| CI verification | ✅ | Deterministic verification + build + Playwright desktop/mobile/keyboard smoke tests. |
-| Browser evidence | ✅ | Final PR-head CI: deterministic verification, build and all four Playwright tests passed; desktop/mobile screenshots uploaded. |
-| PR delivery | ✅ | PR #1 squashed into `main` as `d51279a9…`. |
-| GitHub Pages workflow | ✅ | `.github/workflows/pages.yml` builds and deploys `dist/` from `main`. |
-| Live Pages verification | ⚠️ | Post-merge push/deployment runs are not exposed by the current connector; do not infer success solely from the workflow file. |
+| Product / PRD / design contract | ✅ | `PRODUCT.md`, `docs/PRD.md`, `DESIGN.md` |
+| Research model + regional evidence | ✅ | SW Ontario, Fraser Valley, Vancouver Island with dated source model |
+| Fit Lab | ✅ | Career anchor + weighted preferences rank current regions transparently |
+| Systems | ✅ | Water, wastewater, power and heat dependency / resilience models |
+| Land | ✅ | Distinct 3-, 10- and 20-acre interactive plans |
+| Food + livestock | ✅ | Production depth, workload and livestock friction |
+| Acquisition + roadmap | ✅ | Fixer, turnkey, raw-land pathways + phased transition |
+| Field Atlas | ✅ | Nine approved infographic plates, including corrected blueprint editions |
+| Full-screen image viewer | ✅ | Zoom, pan, keyboard controls, focus restoration and real-image decode QA |
+| Mobile direct manipulation | ✅ RC | Pinch-to-zoom, one-finger pan when magnified, double-tap zoom/reset; explicit controls retained as accessible alternatives |
+| Information architecture | ✅ RC | Short Home hub + focused Regions, Systems, Land, Visuals and Plan workspaces |
+| Legacy deep links | ✅ RC | Old `/#section` links route to their new focused workspace |
+| Responsive / accessibility | ✅ | Keyboard tabs, focus visibility, reduced motion, forced colors, touch-target floors, mobile overflow regression tests |
+| CI / browser QA | ✅ RC | Six-page build; desktop + Pixel 7 workspace tests; real asset decode; real two-finger Chromium pinch test |
+| GitHub Pages | ✅ configured | Actions workflow deploys the built `dist/`; repository Pages URL is `https://benwassa.github.io/demeter/` |
 
-## Impeccable review sequence
+`RC` = implemented in PR #3 and pending merge to `main`.
 
-| Pass | Status | Result |
-|---|---|---|
-| `critique` | ✅* | Baseline 25/40; six priority design/product problems identified. *Degraded single-context run because spawn-agent/live canvas unavailable. |
-| `layout` | ✅ | Replaced repeated panels with atlas plate, schematic, blueprint desk, field guide, acquisition matrix and track. |
-| `typeset` | ✅ | Newsreader display + Plex Sans UI + Plex Mono measurement roles, bounded prose and overflow-safe copy. |
-| `colorize` | ✅ | Restrained paper/spruce system with semantic land/material accents; corrected metadata contrast. |
-| `adapt` | ✅ | Structural mobile/tablet/desktop/short-landscape adaptation; mobile section navigation retained. |
-| `harden` | ✅ | Progressive enhancement fallback, keyboard tabs, reduced motion, forced colors, internal overflow containment. |
-| `polish` | ✅ | Focus visibility, touch targets, tab/panel labels and final responsive containment corrected. |
-| `audit` | ✅ | Final technical design audit **17/20**. Remaining points are deliberate external-asset/performance and deeper assistive-technology testing limits. |
+## Release history
 
-## Browser defects found and fixed
+### V1 — planning atlas foundation
 
-### Mobile intrinsic-width leak
+PR #1 established the product model, research/evidence framework, field-atlas design language, Fit Lab, regional explorer, systems, land, food/livestock, acquisition, roadmap, responsive behavior and CI.
 
-The first browser gate found **440px of document-level horizontal overflow** on Pixel-sized mobile while desktop and keyboard paths passed. Instrumented Playwright diagnostics identified the Systems tab rail: four 210px tabs contributed an 840px min-content width to a grid item whose default `min-width:auto` expanded the document.
+### V1.1 — authored visual atlas
 
-**Fix:** the mobile grid now uses `minmax(0,1fr)` and zeroable grid children; the tab rail remains horizontally scrollable inside its own surface. The subsequent CI run passed the mobile overflow assertion.
+PR #2 merged as `e91f797415b4b8711d466d6bf7dcf216b0596a84`.
 
-### Contrast / focus review
+- Integrated all nine approved Demeter infographic plates.
+- Build validates and exposes the image bundle under `dist/assets/visual-guides/`.
+- Added responsive full-screen viewing, zoom/pan controls and real-image browser QA.
 
-The original muted metadata token was below the intended AA body-text threshold on the paper field, and a gold-only focus ring was not strong enough against all light surfaces.
+### V1.2 — mobile interaction + focused workspaces
 
-**Fix:** metadata moved to `#5f6a63`; focus is now a two-tone gold + ink indicator with a forced-colors override.
+PR #3 applies an Impeccable critique → adapt → harden → polish pass documented in `docs/MOBILE_IA_REVIEW.md`.
 
-## Evidence baseline
+Material changes:
 
-Research refresh date: **2026-08-19**.
+1. **Gesture-native mobile viewer** — pinch zoom is primary on touch; drag pans magnified imagery; double-tap provides quick zoom/reset. Buttons and keyboard controls remain available rather than making a multipoint gesture mandatory.
+2. **Shorter Home** — the homepage is now orientation + routing instead of the entire application.
+3. **Focused URLs** — `regions.html`, `systems.html`, `land.html`, `visuals.html`, `plan.html`.
+4. **Shared runtime** — page separation does not fork product logic or data.
+5. **Compatibility** — saved links such as `/#blueprint` redirect to the equivalent focused page.
 
-- ECCC 1991–2020 normals: London January daily mean **−5.4°C**; Abbotsford **3.7°C**; Victoria Airport **4.6°C** as a maritime proxy.
-- VIA Rail currently shows London → Toronto average **2h33m** and **41 weekly departures**.
-- TransLink's published weekday schedule shows Mission City → Waterfront in about **75 minutes** on morning West Coast Express service.
-- BC ALR land prioritizes agriculture and specifically regulates housing, subdivision, fill and non-farm use alongside local rules.
-- Ontario private well/septic systems are owner-responsibility infrastructure with regulated/professional work boundaries.
-- Natural Resources Canada distinguishes grid-connected and off-grid PV; off-grid PV normally requires storage. Demeter therefore defaults to **grid-optional resilience**.
-- FCC reported average Ontario farmland values increased **2.2% in 2025**; a dated Mission listing is retained only as a market-pressure scale check, never a regional valuation.
+## Quality gates
 
-## Definition of done
+Before V1.2 merges:
 
-- [x] Sourced regional profiles replace placeholder scoring.
-- [x] Personal fit controls visibly change recommendations.
-- [x] Distinct 3-, 10-, and 20-acre plans exist and are usable on mobile.
-- [x] Food + livestock module communicates escalation and workload.
-- [x] Property archetypes compare acquisition routes and infrastructure risk.
-- [x] Water, wastewater, heat and power diagrams expose maintenance + failure modes.
-- [x] Interactive controls have keyboard-visible focus and non-color state cues.
-- [x] Responsive layouts cover phone, tablet, desktop and short landscape.
-- [x] Reduced-motion and forced-colors behaviors are present.
-- [x] External hero imagery is non-critical to content usability.
-- [x] GitHub Actions verifies source invariants and browser smoke paths.
-- [x] GitHub Pages deployment workflow is present.
-- [x] Final Impeccable audit is documented with limitations.
+- [x] Deterministic verification passes.
+- [x] All six HTML entry points build.
+- [x] All nine atlas images decode from the built artifact.
+- [x] Desktop and Pixel 7 profiles load each workspace independently.
+- [x] No tested page creates document-level mobile horizontal overflow.
+- [x] Existing keyboard tab navigation remains green.
+- [x] Full-screen image open / zoom / reset / close path remains green.
+- [x] Real two-finger touch input increases zoom on the mobile Chromium profile.
+- [x] Legacy section deep links are covered by browser QA.
 
-## Next depth — deliberately not V1 release blockers
+## Next product depth
 
-1. Build repeatable property/listing samples instead of isolated market examples.
-2. Add candidate-town frost/growing-season, water, wildfire and flood layers.
-3. Add hospital, grocery, internet, property-tax and insurance comparisons.
-4. Validate livestock/agricultural bylaws after municipalities are shortlisted.
-5. Add saved scenarios/export only when real repeat-use behavior justifies persistence.
+After V1.2, prioritize planning intelligence over more interface breadth:
+
+1. Repeatable property/listing samples and price distributions.
+2. Candidate-town frost/growing-season, flood, wildfire and water layers.
+3. Hospital, grocery, internet, property-tax and insurance comparisons.
+4. Municipality-specific livestock/agricultural rules after subregions are shortlisted.
+5. Saved scenarios/export only when repeat use justifies persistence.
