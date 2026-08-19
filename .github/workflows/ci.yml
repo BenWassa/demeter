@@ -29,4 +29,5 @@ jobs:
             artifacts/
             playwright-report/
             test-results/
+            file_*.png
           if-no-files-found: ignore
