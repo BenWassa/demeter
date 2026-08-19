@@ -21,7 +21,7 @@ test('home is a focused navigation hub', async ({ page },testInfo) => {
   await expect(page.locator('.route-grid>a')).toHaveCount(5);
   await expect(page.locator('#fit')).toHaveCount(0);
   await expect(page.locator('#blueprint')).toHaveCount(0);
-  await expect(page.getByRole('link',{name:/Explore regions/})).toHaveAttribute('href','regions.html');
+  await expect(page.getByRole('link',{name:'Explore regions',exact:true})).toHaveAttribute('href','regions.html');
   await expectNoDocumentOverflow(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-home.png`,fullPage:true});
 });
