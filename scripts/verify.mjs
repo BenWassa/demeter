@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-const paths=['index.html','regions.html','systems.html','land.html','visuals.html','plan.html','styles.css','app.js','src/app-v2.js','src/a11y.js','src/view.js','src/regions.js','src/land.js','src/v2.css','src/polish.css','src/navigation.css','src/visuals.js','src/visual-guides.css','scripts/render-visual-guides.mjs','scripts/build.mjs'];
+const paths=['index.html','regions.html','systems.html','land.html','visuals.html','plan.html','visual-audit.html','styles.css','app.js','src/app-v2.js','src/a11y.js','src/view.js','src/regions.js','src/land.js','src/v2.css','src/polish.css','src/navigation.css','src/visuals.js','src/visual-guides.css','src/visual-audit.js','src/visual-audit.css','scripts/render-visual-guides.mjs','scripts/build.mjs'];
 const files=await Promise.all(paths.map(async path=>[path,await readFile(new URL(`../${path}`,import.meta.url),'utf8')]));
 const source=Object.fromEntries(files),failures=[];const check=(condition,message)=>{if(!condition)failures.push(message);};
 
@@ -31,7 +31,15 @@ check(renderer.includes('UTILITY INDEPENDENCE')&&renderer.includes('OPERATING BU
 check(renderer.includes("'DESIGN-DEPENDENT'")&&!renderer.includes("['GRID STANDARD',1"),'Independence spectrum has drifted back to ambiguous numeric scoring');
 check(renderer.includes('LABOUR INTENSITY')&&renderer.includes('SYSTEMS CRITICALITY')&&!renderer.toLowerCase().includes('speedometer'),'Seasonal plates do not use the required explicit measures');
 check(renderer.includes('levelColumn('),'Seasonal ordinal level bars missing');
-check(source['scripts/build.mjs'].includes('renderVisualGuides(dist)')&&!source['scripts/build.mjs'].includes('demeter-visual-guides-assets.zip'),'Build still depends on the obsolete raster bundle');
+check(source['scripts/build.mjs'].includes('renderVisualGuides(dist)'),'Canonical visual renderer missing from build');
+
+// The recovery bundle is allowed only for the temporary audit workspace. The
+// live atlas must remain SVG-only while the audit page can compare old/current.
+check(source['visual-audit.html'].includes('src/visual-audit.js')&&source['visual-audit.html'].includes('Copy JSON'),'Visual audit page missing');
+check(source['src/visual-audit.js'].includes('demeter-visual-guides-assets.zip')&&source['src/visual-audit.js'].includes('DecompressionStream'),'Legacy comparison loader missing');
+check(source['src/visual-audit.js'].includes("['keep','Keep selected version']")&&source['src/visual-audit.js'].includes("['recreate','Recreate from selected version']"),'Visual audit outcome workflow missing');
+check(source['src/visual-audit.js'].includes('undoStack')&&source['src/visual-audit.js'].includes('redoStack')&&source['src/visual-audit.js'].includes('navigator.clipboard.writeText'),'Undo/redo or JSON handoff missing');
+check(source['scripts/build.mjs'].includes("'visual-audit.html'")&&source['scripts/build.mjs'].includes('visual-audit-source'),'Audit workspace is not included in the build');
 
 check(source['src/v2.css'].includes('@media(prefers-reduced-motion:reduce)')&&source['src/visual-guides.css'].includes('@media(prefers-reduced-motion:reduce)'),'Reduced-motion adaptation missing');
 check(source['src/v2.css'].includes('@media(forced-colors:active)')&&source['src/polish.css'].includes('@media(forced-colors:active)'),'Forced-colors adaptation missing');
@@ -45,4 +53,4 @@ check(source['src/view.js'].includes('Research refresh: 2026-08-19'),'Research r
 for(const [path,text] of files.filter(([p])=>p.endsWith('.js')||p.endsWith('.mjs')))check(!text.includes('TODO'),`${path}: unresolved TODO`);
 
 if(failures.length){console.error(`Verification failed (${failures.length}):`);failures.forEach(f=>console.error(`- ${f}`));process.exit(1);}
-console.log('Verification passed: product, workspace IA, evidence, accessibility, gesture controls and the canonical Field Atlas publication contract are present.');
+console.log('Verification passed: product, Field Atlas and isolated visual-audit workflow contracts are present.');

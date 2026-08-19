@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visual audit · Project Demeter</title>
+  <meta name="description" content="Temporary review workspace for choosing which Demeter Field Atlas visuals to keep, restore or recreate.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="src/visual-audit.css">
+  <script type="module" src="src/visual-audit.js"></script>
+</head>
+<body class="audit-body">
+  <a class="skip-link" href="#audit-list">Skip to review</a>
+  <header class="audit-toolbar">
+    <a class="audit-back" href="visuals.html">← Field Atlas</a>
+    <div class="audit-toolbar-title"><strong>Visual audit</strong><span id="audit-progress">0 / 9 reviewed</span></div>
+    <div class="audit-history" aria-label="Review history">
+      <button id="audit-undo" type="button" disabled>Undo</button>
+      <button id="audit-redo" type="button" disabled>Redo</button>
+    </div>
+  </header>
+
+  <main class="audit-shell">
+    <section class="audit-intro" aria-labelledby="audit-title">
+      <p class="audit-kicker">Temporary review workspace · Issue #5 follow-up</p>
+      <h1 id="audit-title">Choose what Demeter should actually keep.</h1>
+      <p>For each concept, compare the pre-rebuild plate with the current rebuild. Select the version you like most, then say whether to keep it, recreate from it, rethink the concept, drop it, or leave it unsure. Your choices save locally as you go.</p>
+      <div class="audit-legend" aria-label="Workflow">
+        <span><b>1</b> Pick a preferred version</span>
+        <span><b>2</b> Pick an outcome</span>
+        <span><b>3</b> Add a note only when useful</span>
+      </div>
+    </section>
+
+    <section class="audit-controls" aria-label="Audit controls">
+      <label><input id="audit-unreviewed-only" type="checkbox"> Show unreviewed only</label>
+      <button id="audit-copy" type="button">Copy JSON</button>
+      <button id="audit-download" type="button">Download JSON</button>
+      <button id="audit-reset" class="audit-danger" type="button">Reset all</button>
+    </section>
+
+    <section id="audit-list" class="audit-list" aria-live="polite"></section>
+
+    <section class="audit-export" aria-labelledby="audit-export-title">
+      <div>
+        <p class="audit-kicker">Pass back to ChatGPT</p>
+        <h2 id="audit-export-title">Review JSON</h2>
+        <p>Copy this entire object into chat. It contains only your visual decisions and notes.</p>
+      </div>
+      <textarea id="audit-json" readonly spellcheck="false" aria-label="Visual audit JSON"></textarea>
+    </section>
+  </main>
+
+  <dialog id="audit-viewer" class="audit-viewer" aria-label="Image preview">
+    <button id="audit-viewer-close" type="button" aria-label="Close image preview">×</button>
+    <img id="audit-viewer-image" alt="">
+    <p id="audit-viewer-caption"></p>
+  </dialog>
+</body>
+</html>
