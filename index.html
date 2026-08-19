@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#142019" />
+  <meta name="description" content="Project Demeter — a field atlas for planning a resilient, semi-off-grid life in Canada." />
+  <title>Project Demeter — Canadian Homestead Field Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header" data-header>
+    <a class="brand" href="#top" aria-label="Project Demeter home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="img">
+          <path d="M4 26V8l12-4 12 4v18" />
+          <path d="M8 23h16M11 19h10M14 15h4" />
+        </svg>
+      </span>
+      <span>DEMETER</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#regions">Regions</a>
+      <a href="#systems">Systems</a>
+      <a href="#blueprint">Blueprint</a>
+      <a href="#roadmap">Roadmap</a>
+    </nav>
+
+    <a class="header-action" href="#regions">Start exploring</a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-image" aria-hidden="true"></div>
+      <div class="hero-shade" aria-hidden="true"></div>
+
+      <div class="hero-content page-shell">
+        <div class="hero-copy">
+          <p class="hero-project">Project Demeter</p>
+          <h1 id="hero-title">A field atlas for the life you want to build.</h1>
+          <p class="hero-deck">
+            Explore where a comfortable, resilient homestead could work — then connect the land to water, power, food, access, and a realistic path to get there.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#regions">Explore regions</a>
+            <a class="button button-quiet" href="#blueprint">See the 10-acre plan</a>
+          </div>
+        </div>
+
+        <aside class="survey-plate" aria-label="Current planning profile">
+          <div class="survey-heading">
+            <span>Seed scenario</span>
+            <span class="survey-code">DMTR / 001</span>
+          </div>
+          <dl>
+            <div>
+              <dt>Useful land</dt>
+              <dd>8–20 ac</dd>
+            </div>
+            <div>
+              <dt>Essentials</dt>
+              <dd>≤30 min</dd>
+            </div>
+            <div>
+              <dt>Work</dt>
+              <dd>Remote-first</dd>
+            </div>
+            <div>
+              <dt>Energy</dt>
+              <dd>Grid-optional</dd>
+            </div>
+          </dl>
+          <p>Illustrative profile based on the current Demeter planning brief.</p>
+        </aside>
+      </div>
+
+      <div class="hero-caption page-shell">
+        <span>Simcoe-area farmland, Ontario</span>
+        <span>Prototype image · Michael Hamments / Unsplash</span>
+      </div>
+    </section>
+
+    <section class="section regions-section" id="regions" aria-labelledby="regions-title">
+      <div class="page-shell">
+        <div class="section-intro split-intro">
+          <div>
+            <h2 id="regions-title">Three places worth testing first.</h2>
+          </div>
+          <p>
+            The first Demeter comparison keeps the field deliberately small. Each region offers a materially different balance of climate, cost, land, and access to city life.
+          </p>
+        </div>
+
+        <div class="region-workbench">
+          <div class="region-selector" role="group" aria-label="Choose a region">
+            <button class="region-option is-active" type="button" data-region="ontario" aria-pressed="true">
+              <span class="region-place">Southwest Ontario</span>
+              <span class="region-note">Value baseline</span>
+            </button>
+            <button class="region-option" type="button" data-region="fraser" aria-pressed="false">
+              <span class="region-place">Fraser Valley, BC</span>
+              <span class="region-note">Climate + access</span>
+            </button>
+            <button class="region-option" type="button" data-region="island" aria-pressed="false">
+              <span class="region-place">Vancouver Island</span>
+              <span class="region-note">Lifestyle wildcard</span>
+            </button>
+          </div>
+
+          <div class="region-detail" aria-live="polite">
+            <div class="region-detail-head">
+              <div>
+                <p class="location-line" id="region-location">Ontario · Norfolk → Elgin → Middlesex</p>
+                <h3 id="region-name">Southwest Ontario</h3>
+              </div>
+              <p class="region-thesis" id="region-thesis">The practical baseline: productive rural land, real towns nearby, and the strongest Toronto connection of the current shortlist.</p>
+            </div>
+
+            <div class="comparison-table" aria-label="Illustrative region profile">
+              <div class="comparison-row">
+                <span>Winter tolerance</span>
+                <div class="meter" aria-hidden="true"><span id="winter-meter" style="--score: 56%"></span></div>
+                <strong id="winter-label">Moderate</strong>
+              </div>
+              <div class="comparison-row">
+                <span>Acreage value</span>
+                <div class="meter" aria-hidden="true"><span id="value-meter" style="--score: 78%"></span></div>
+                <strong id="value-label">Strongest of 3</strong>
+              </div>
+              <div class="comparison-row">
+                <span>Major-city access</span>
+                <div class="meter" aria-hidden="true"><span id="access-meter" style="--score: 82%"></span></div>
+                <strong id="access-label">Strong</strong>
+              </div>
+              <div class="comparison-row">
+                <span>Growing potential</span>
+                <div class="meter" aria-hidden="true"><span id="growing-meter" style="--score: 75%"></span></div>
+                <strong id="growing-label">Strong</strong>
+              </div>
+            </div>
+
+            <div class="region-bottom-line">
+              <span>Why it leads</span>
+              <p id="region-bottom">Best current balance for a fixer-upper acreage strategy without giving up hospitals, towns, remote-work infrastructure, or occasional Toronto access.</p>
+            </div>
+            <p class="prototype-note">Scores are illustrative design data, not current market research.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section systems-section" id="systems" aria-labelledby="systems-title">
+      <div class="page-shell systems-layout">
+        <div class="systems-lead">
+          <h2 id="systems-title">Off-grid is a stack of ordinary systems.</h2>
+          <p>
+            The complexity drops once the lifestyle is decomposed. Demeter treats each system as something to understand, maintain, and make resilient — not as an identity test.
+          </p>
+
+          <div class="system-tabs" role="tablist" aria-label="Homestead systems">
+            <button type="button" role="tab" aria-selected="true" class="system-tab is-active" data-system="water">Water</button>
+            <button type="button" role="tab" aria-selected="false" class="system-tab" data-system="power">Power</button>
+            <button type="button" role="tab" aria-selected="false" class="system-tab" data-system="heat">Heat</button>
+            <button type="button" role="tab" aria-selected="false" class="system-tab" data-system="food">Food</button>
+          </div>
+        </div>
+
+        <div class="system-panel" role="tabpanel" tabindex="0">
+          <div class="system-flow" id="system-flow" aria-label="Water system flow">
+            <span>Well</span><i aria-hidden="true"></i><span>Pump</span><i aria-hidden="true"></i><span>Pressure</span><i aria-hidden="true"></i><span>Treatment</span><i aria-hidden="true"></i><span>House</span>
+          </div>
+          <h3 id="system-title">Own the source. Learn the routine.</h3>
+          <p id="system-copy">A drilled well can make household water independent without turning the owner into a well contractor. The practical job is testing, filters, pump awareness, freeze protection, and having a plan for outages.</p>
+          <dl class="system-facts">
+            <div><dt>Owner effort</dt><dd id="system-effort">Low–moderate</dd></div>
+            <div><dt>Failure consequence</dt><dd id="system-risk">High</dd></div>
+            <div><dt>Best resilience move</dt><dd id="system-resilience">Storage + backup power</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="blueprint-section" id="blueprint" aria-labelledby="blueprint-title">
+      <div class="page-shell blueprint-heading">
+        <div>
+          <h2 id="blueprint-title">How much land is actually enough?</h2>
+          <p>Acreage becomes useful when you can see what it needs to hold.</p>
+        </div>
+        <div class="acreage-switcher" role="group" aria-label="Choose acreage scenario">
+          <button type="button" data-acres="3">3 acres</button>
+          <button type="button" data-acres="10" class="is-active" aria-pressed="true">10 acres</button>
+          <button type="button" data-acres="20">20 acres</button>
+        </div>
+      </div>
+
+      <div class="page-shell blueprint-desk">
+        <div class="blueprint-canvas" data-blueprint="10">
+          <svg viewBox="0 0 1000 620" role="img" aria-labelledby="plan-title plan-desc">
+            <title id="plan-title">Illustrative ten-acre homestead layout</title>
+            <desc id="plan-desc">A conceptual land plan with a home and garden near the road, workshop and greenhouse nearby, orchard and pasture behind them, and woodlot at the rear.</desc>
+            <defs>
+              <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" class="grid-minor" />
+              </pattern>
+              <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                <rect width="100" height="100" fill="url(#smallGrid)" />
+                <path d="M 100 0 L 0 0 0 100" class="grid-major" />
+              </pattern>
+            </defs>
+
+            <rect x="1" y="1" width="998" height="618" class="plan-field" />
+            <rect x="1" y="1" width="998" height="618" fill="url(#grid)" />
+
+            <path class="road" d="M0 552 H1000" />
+            <text class="plan-label" x="42" y="585">ALL-SEASON ROAD</text>
+
+            <path class="drive" d="M150 552 C170 470 216 420 298 382" />
+            <rect class="zone house" x="238" y="325" width="150" height="92" />
+            <text class="zone-title" x="260" y="365">HOUSE</text>
+            <text class="zone-meta" x="260" y="389">mudroom · kitchen axis</text>
+
+            <rect class="zone garden" x="410" y="320" width="170" height="128" />
+            <text class="zone-title" x="432" y="360">KITCHEN GARDEN</text>
+            <text class="zone-meta" x="432" y="385">intensive beds + compost</text>
+
+            <rect class="zone greenhouse" x="610" y="335" width="102" height="78" />
+            <text class="zone-title" x="627" y="369">GLASS</text>
+            <text class="zone-meta" x="627" y="391">house</text>
+
+            <rect class="zone workshop" x="118" y="255" width="130" height="105" />
+            <text class="zone-title" x="138" y="296">SHOP</text>
+            <text class="zone-meta" x="138" y="320">barn · tools</text>
+
+            <rect class="zone orchard" x="390" y="155" width="300" height="125" />
+            <text class="zone-title" x="414" y="198">ORCHARD + BERRIES</text>
+            <text class="zone-meta" x="414" y="222">perennial food zone</text>
+
+            <rect class="zone pasture" x="715" y="164" width="236" height="285" />
+            <text class="zone-title" x="742" y="209">PASTURE</text>
+            <text class="zone-meta" x="742" y="233">optional livestock</text>
+
+            <path class="zone woodlot" d="M18 20 H950 V130 H705 V145 H365 V130 H18 Z" />
+            <text class="zone-title" x="46" y="72">WOODLOT + TRAILS</text>
+            <text class="zone-meta" x="46" y="96">privacy · fuel · habitat</text>
+
+            <rect class="utility septic" x="600" y="455" width="184" height="77" />
+            <text class="utility-title" x="620" y="488">SEPTIC / RESERVE</text>
+            <text class="utility-meta" x="620" y="510">conceptual setback zone</text>
+
+            <circle class="well" cx="205" cy="457" r="18" />
+            <text class="utility-title" x="235" y="463">WELL</text>
+
+            <path class="north" d="M900 515 v-62 m0 0 -12 20 m12-20 12 20" />
+            <text class="plan-label" x="888" y="540">N</text>
+          </svg>
+        </div>
+
+        <aside class="blueprint-legend">
+          <div class="legend-head">
+            <span id="acreage-label">10-acre concept</span>
+            <span>Illustrative only</span>
+          </div>
+          <p id="acreage-thesis">Enough room for serious food production, a shop, optional pasture, and a meaningful privacy/woodlot buffer without requiring a full farm operation.</p>
+          <ul id="acreage-list">
+            <li><strong>1–2 ac</strong><span>house, drive, septic, garden, shop</span></li>
+            <li><strong>2–3 ac</strong><span>orchard, greenhouse, intensive food zone</span></li>
+            <li><strong>2–3 ac</strong><span>pasture / flexible field</span></li>
+            <li><strong>3+ ac</strong><span>woodlot, trails, privacy, future use</span></li>
+          </ul>
+          <p class="blueprint-warning">Real layouts depend on parcel geometry, soil, drainage, setbacks, well/septic design, sun, slope, access, and local rules.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section roadmap-section" id="roadmap" aria-labelledby="roadmap-title">
+      <div class="page-shell roadmap-layout">
+        <div class="roadmap-intro">
+          <h2 id="roadmap-title">Build the life before you build everything at once.</h2>
+          <p>The useful path is staged. Career flexibility and property judgment come before solar panels and livestock.</p>
+        </div>
+
+        <ol class="roadmap">
+          <li>
+            <span class="phase">Now</span>
+            <div><strong>Build optionality</strong><p>Remote-work leverage, capital, home-maintenance literacy, rural exposure.</p></div>
+          </li>
+          <li>
+            <span class="phase">2–5 yr</span>
+            <div><strong>Test the life</strong><p>Visit candidate regions in bad weather. Rent rural. Track real properties and operating costs.</p></div>
+          </li>
+          <li>
+            <span class="phase">5–10 yr</span>
+            <div><strong>Acquire the right bones</strong><p>Useful land, sound structure, legal access, water, septic, internet, and room to adapt.</p></div>
+          </li>
+          <li>
+            <span class="phase">Years 1–3</span>
+            <div><strong>Layer resilience</strong><p>Critical house systems first; food, workshop, energy, and livestock expand after the property works.</p></div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="closing-section" aria-labelledby="closing-title">
+      <div class="page-shell closing-layout">
+        <div>
+          <h2 id="closing-title">A planning tool, not a fantasy generator.</h2>
+          <p>Every consequential Demeter claim should eventually carry its jurisdiction, source, and research date.</p>
+        </div>
+        <a class="button button-dark" href="docs/PRD.md">Read the product brief</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="page-shell footer-inner">
+      <span>Project Demeter</span>
+      <span>Prototype · Canada · 2026</span>
+    </div>
+  </footer>
+</body>
+</html>
