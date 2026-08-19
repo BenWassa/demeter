@@ -17,12 +17,23 @@ if (legacyTarget) {
   import('./src/app-v2.js')
     .then(() => import('./src/a11y.js'))
     .then(() => import('./src/visuals.js'))
-    .then(({ initVisuals }) => {
+    .then((visualModule) => {
+      const correctedTenAcre = visualModule.visuals.find((visual) => visual.id === 'acre10');
+      if (correctedTenAcre) correctedTenAcre.src = 'assets/visual-guides/blueprint-10-acre.png';
+
+      const preview = document.querySelector('.route-feature img');
+      if (preview) preview.src = 'assets/visual-guides/blueprint-10-acre.png';
+      const previewCopy = document.querySelector('.route-feature span');
+      if (previewCopy) previewCopy.textContent = 'Authored field-atlas plates. Full-screen inspection with native-feeling mobile zoom and pan.';
+
       const style = document.createElement('link');
       style.rel = 'stylesheet';
       style.href = 'src/visual-guides.css';
       document.head.append(style);
-      initVisuals();
+      visualModule.initVisuals();
+
+      // The current 20-acre image is known to be semantically wrong. Keep it out of the live atlas until its replacement is supplied.
+      document.querySelector('[data-visual="acre20"]')?.setAttribute('hidden', '');
     })
     .catch((error) => {
       console.error('Demeter enhancement failed; static atlas remains available.', error);
