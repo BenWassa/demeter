@@ -1,3 +1,6 @@
+const polish=document.createElement('link');
+polish.rel='stylesheet'; polish.href='src/polish.css'; document.head.append(polish);
+
 const tabGroups = [
   ['#region-tabs','region-panel'],['#system-tabs','system-panel'],['#food-tabs','food-panel'],['#arch-tabs','arch-panel']
 ];
