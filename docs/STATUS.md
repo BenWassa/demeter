@@ -1,9 +1,10 @@
 # Project Demeter — Build Status
 
-**Working branch:** `agent/demeter-foundation`  
-**PR:** #1  
+**Release branch:** `main`  
+**PR:** #1 — merged 2026-08-19  
+**V1 merge commit:** `d51279a9bf6ceb72d84b458f9f36eced6cbbd806`  
 **Last updated:** 2026-08-19  
-**Release state:** V1 implementation complete; release gate green; PR ready for merge.
+**Release state:** V1 merged; pre-merge release gate green; GitHub Pages workflow shipped. Live Pages endpoint verification is not exposed by the available GitHub connector and is therefore not claimed here.
 
 ## Objective
 
@@ -28,8 +29,10 @@ Ship a coherent end-to-end V1 of Project Demeter: an interactive Canadian homest
 | Responsive / accessibility | ✅ | Desktop/tablet/mobile/short-landscape adaptation; keyboard tab navigation; reduced motion; forced colors; focus/touch hardening. |
 | Progressive failure mode | ✅ | Existing static atlas remains usable if V2 JavaScript enhancement fails. |
 | CI verification | ✅ | Deterministic verification + build + Playwright desktop/mobile/keyboard smoke tests. |
-| Browser evidence | ✅ | CI run `32217850358`: all four Playwright tests passed; desktop and mobile screenshots uploaded. |
-| GitHub Pages workflow | ✅ | `.github/workflows/pages.yml` builds and deploys `dist/` from `main`; actual deployment occurs after merge. |
+| Browser evidence | ✅ | Final PR-head CI: deterministic verification, build and all four Playwright tests passed; desktop/mobile screenshots uploaded. |
+| PR delivery | ✅ | PR #1 squashed into `main` as `d51279a9…`. |
+| GitHub Pages workflow | ✅ | `.github/workflows/pages.yml` builds and deploys `dist/` from `main`. |
+| Live Pages verification | ⚠️ | Post-merge push/deployment runs are not exposed by the current connector; do not infer success solely from the workflow file. |
 
 ## Impeccable review sequence
 
