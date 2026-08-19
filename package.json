@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify": "node scripts/verify.mjs",
-    "serve": "node scripts/server.mjs",
+    "serve": "npm run build && DEMETER_ROOT=dist node scripts/server.mjs",
     "test": "playwright test"
   },
   "devDependencies": {
