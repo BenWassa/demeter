@@ -1,9 +1,10 @@
 # Project Demeter — Build Status
 
 **Release branch:** `main`  
-**Working PR:** #3 — `agent/mobile-ia-pass` → `main`  
+**Latest merged PR:** #3  
+**V1.2 merge commit:** `780409d4d29e9704e0bbba19d7a80b93a2177b02`  
 **Last updated:** 2026-08-19  
-**Current release:** V1.1 on `main`; V1.2 mobile/IA release candidate in PR #3.
+**Current release:** V1.2 — mobile interaction + focused workspaces shipped to `main`.
 
 ## Current product
 
@@ -22,14 +23,12 @@ Project Demeter is a responsive Canadian homestead field atlas for comparing reg
 | Acquisition + roadmap | ✅ | Fixer, turnkey, raw-land pathways + phased transition |
 | Field Atlas | ✅ | Nine approved infographic plates, including corrected blueprint editions |
 | Full-screen image viewer | ✅ | Zoom, pan, keyboard controls, focus restoration and real-image decode QA |
-| Mobile direct manipulation | ✅ RC | Pinch-to-zoom, one-finger pan when magnified, double-tap zoom/reset; explicit controls retained as accessible alternatives |
-| Information architecture | ✅ RC | Short Home hub + focused Regions, Systems, Land, Visuals and Plan workspaces |
-| Legacy deep links | ✅ RC | Old `/#section` links route to their new focused workspace |
+| Mobile direct manipulation | ✅ | Pinch-to-zoom, one-finger pan when magnified, double-tap zoom/reset; explicit controls retained as accessible alternatives |
+| Information architecture | ✅ | Short Home hub + focused Regions, Systems, Land, Visuals and Plan workspaces |
+| Legacy deep links | ✅ | Old `/#section` links route to their new focused workspace |
 | Responsive / accessibility | ✅ | Keyboard tabs, focus visibility, reduced motion, forced colors, touch-target floors, mobile overflow regression tests |
-| CI / browser QA | ✅ RC | Six-page build; desktop + Pixel 7 workspace tests; real asset decode; real two-finger Chromium pinch test |
+| CI / browser QA | ✅ | Six-page build; desktop + Pixel 7 workspace tests; real asset decode; real two-finger Chromium pinch test |
 | GitHub Pages | ✅ configured | Actions workflow deploys the built `dist/`; repository Pages URL is `https://benwassa.github.io/demeter/` |
-
-`RC` = implemented in PR #3 and pending merge to `main`.
 
 ## Release history
 
@@ -47,7 +46,7 @@ PR #2 merged as `e91f797415b4b8711d466d6bf7dcf216b0596a84`.
 
 ### V1.2 — mobile interaction + focused workspaces
 
-PR #3 applies an Impeccable critique → adapt → harden → polish pass documented in `docs/MOBILE_IA_REVIEW.md`.
+PR #3 merged as `780409d4d29e9704e0bbba19d7a80b93a2177b02` after an Impeccable critique → adapt → harden → polish pass documented in `docs/MOBILE_IA_REVIEW.md`.
 
 Material changes:
 
@@ -57,23 +56,21 @@ Material changes:
 4. **Shared runtime** — page separation does not fork product logic or data.
 5. **Compatibility** — saved links such as `/#blueprint` redirect to the equivalent focused page.
 
-## Quality gates
+## V1.2 quality gate
 
-Before V1.2 merges:
-
-- [x] Deterministic verification passes.
-- [x] All six HTML entry points build.
-- [x] All nine atlas images decode from the built artifact.
-- [x] Desktop and Pixel 7 profiles load each workspace independently.
-- [x] No tested page creates document-level mobile horizontal overflow.
-- [x] Existing keyboard tab navigation remains green.
-- [x] Full-screen image open / zoom / reset / close path remains green.
-- [x] Real two-finger touch input increases zoom on the mobile Chromium profile.
-- [x] Legacy section deep links are covered by browser QA.
+- [x] Deterministic verification passed.
+- [x] All six HTML entry points built.
+- [x] All nine atlas images decoded from the built artifact.
+- [x] Desktop and Pixel 7 profiles loaded each workspace independently.
+- [x] No tested page created document-level mobile horizontal overflow.
+- [x] Existing keyboard tab navigation remained green.
+- [x] Full-screen image open / zoom / reset / close path remained green.
+- [x] Real two-finger touch input increased zoom on the mobile Chromium profile.
+- [x] Legacy section deep links passed browser QA.
 
 ## Next product depth
 
-After V1.2, prioritize planning intelligence over more interface breadth:
+Prioritize planning intelligence over more interface breadth:
 
 1. Repeatable property/listing samples and price distributions.
 2. Candidate-town frost/growing-season, flood, wildfire and water layers.
