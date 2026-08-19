@@ -82,7 +82,7 @@ test('tabs support keyboard navigation', async ({ page }) => {
   await expect(second).toBeFocused();await expect(second).toHaveAttribute('aria-selected','true');
 });
 
-test('Field Atlas is curated, uncropped and all canonical assets decode', async ({ page },testInfo) => {
+test('Field Atlas is curated, uncropped and every canonical plate opens', async ({ page },testInfo) => {
   await ready(page,'/visuals.html');
   await page.waitForSelector('#visual-atlas');
   await expect(page.getByRole('heading',{level:1})).toContainText('Reference plates');
@@ -99,13 +99,26 @@ test('Field Atlas is curated, uncropped and all canonical assets decode', async 
   expect(imageStyle.objectFit).not.toBe('cover');
   expect(Math.abs((imageStyle.width/imageStyle.height)-(imageStyle.naturalWidth/imageStyle.naturalHeight))).toBeLessThan(.03);
 
-  const card=page.getByRole('button',{name:/Open Region comparison full screen/});await card.click();
   const dialog=page.locator('#visual-lightbox'),image=page.locator('#visual-lightbox-image');
+  const close=page.getByRole('button',{name:'Close full-screen image'});
+  const cards=page.locator('.visual-card');
+  for(let i=0;i<9;i++){
+    const current=cards.nth(i);
+    await current.click();
+    await expect(dialog).toBeVisible();
+    await expect.poll(async()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+    expect(await image.getAttribute('src')).toBe(srcs[i]);
+    await close.click();
+    await expect(dialog).not.toBeVisible();
+    await expect(current).toBeFocused();
+  }
+
+  const card=page.getByRole('button',{name:/Open Region comparison full screen/});await card.click();
   await expect(dialog).toBeVisible();await expect.poll(async()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
   await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
   await page.getByRole('button',{name:'Zoom in'}).click();await expect(page.locator('#visual-zoom-level')).toHaveText('125%');
   await page.keyboard.press('0');await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
-  await page.getByRole('button',{name:'Close full-screen image'}).click();await expect(dialog).not.toBeVisible();await expect(card).toBeFocused();
+  await close.click();await expect(dialog).not.toBeVisible();await expect(card).toBeFocused();
   await expectNoDocumentOverflow(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-visuals.png`,fullPage:true});
 });
@@ -121,7 +134,7 @@ test('mobile Field Atlas uses grouped horizontal rails without page overflow', a
   await expectNoDocumentOverflow(page);
 });
 
-test('mobile visual atlas pinch gesture zooms directly', async ({ page, context },testInfo) => {
+test('mobile visual atlas pinch, pan and double-tap work directly', async ({ page, context },testInfo) => {
   test.skip(testInfo.project.name!=='mobile-chromium','Touch gesture release gate');
   await ready(page,'/visuals.html');
   await page.waitForSelector('#visual-atlas');
@@ -130,8 +143,21 @@ test('mobile visual atlas pinch gesture zooms directly', async ({ page, context 
   const box=await page.locator('#visual-stage').boundingBox();expect(box).not.toBeNull();
   const cx=box.x+box.width/2,cy=box.y+box.height/2;
   const client=await context.newCDPSession(page);
+
   await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx-55,y:cy,id:0},{x:cx+55,y:cy,id:1}]});
   await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx-105,y:cy,id:0},{x:cx+105,y:cy,id:1}]});
   await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
   await expect.poll(async()=>Number((await page.locator('#visual-zoom-level').textContent()).replace('%',''))).toBeGreaterThan(150);
+
+  const beforePan=await image.evaluate(img=>getComputedStyle(img).transform);
+  await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx,y:cy,id:2}]});
+  await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx+48,y:cy+32,id:2}]});
+  await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await expect.poll(async()=>image.evaluate(img=>getComputedStyle(img).transform)).not.toBe(beforePan);
+
+  for(let i=0;i<2;i++){
+    await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx,y:cy,id:3+i}]});
+    await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  }
+  await expect.poll(async()=>Number((await page.locator('#visual-zoom-level').textContent()).replace('%',''))).toBe(100);
 });
