@@ -35,6 +35,14 @@ if (legacyTarget) {
       document.head.append(style);
       visualModule.initVisuals();
 
+      // visuals.js precomputes card markup at import time, so apply the corrected source/aspect to the rendered card too.
+      const correctedTenAcreCard = document.querySelector('[data-visual="acre10"]');
+      if (correctedTenAcreCard && correctedTenAcre) {
+        correctedTenAcreCard.classList.add('wide');
+        const thumbnail = correctedTenAcreCard.querySelector('img');
+        if (thumbnail) thumbnail.src = correctedTenAcre.src;
+      }
+
       // The current 20-acre image is known to be semantically wrong. Keep it out of the live atlas until its replacement is supplied.
       const incorrectTwentyAcre = document.querySelector('[data-visual="acre20"]');
       if (incorrectTwentyAcre) {
