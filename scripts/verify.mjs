@@ -26,8 +26,11 @@ const renderer=source['scripts/render-visual-guides.mjs'];
 const requiredPlates=['region-comparison.svg','blueprint-3-acre.svg','blueprint-10-acre.svg','blueprint-20-acre.svg','independence-spectrum.svg','homestead-systems.svg','food-production-pathways.svg','homestead-year-southwest-ontario.svg','homestead-year-coastal-bc.svg'];
 check(requiredPlates.every(name=>renderer.includes(`'${name}'`)),'Canonical nine-plate output set incomplete');
 check(renderer.includes("Object.entries(BLUEPRINTS).map(([name,data])=>[name,blueprintPlate(data)])"),'3 / 10 / 20-acre plates are not guaranteed to share one blueprint template');
+check(renderer.includes('scalePx=Math.round(742*50/data.parcelM)'),'Blueprint scale bar is not proportional to each conceptual parcel');
 check(renderer.includes('UTILITY INDEPENDENCE')&&renderer.includes('OPERATING BURDEN')&&renderer.includes('RESILIENCE POTENTIAL'),'Independence dimensions are not explicit');
-check(renderer.includes('LABOUR')&&renderer.includes('SYSTEMS CRITICALITY')&&!renderer.toLowerCase().includes('speedometer'),'Seasonal plates do not use the required explicit measures');
+check(renderer.includes("'DESIGN-DEPENDENT'")&&!renderer.includes("['GRID STANDARD',1"),'Independence spectrum has drifted back to ambiguous numeric scoring');
+check(renderer.includes('LABOUR INTENSITY')&&renderer.includes('SYSTEMS CRITICALITY')&&!renderer.toLowerCase().includes('speedometer'),'Seasonal plates do not use the required explicit measures');
+check(renderer.includes('levelColumn('),'Seasonal ordinal level bars missing');
 check(source['scripts/build.mjs'].includes('renderVisualGuides(dist)')&&!source['scripts/build.mjs'].includes('demeter-visual-guides-assets.zip'),'Build still depends on the obsolete raster bundle');
 
 check(source['src/v2.css'].includes('@media(prefers-reduced-motion:reduce)')&&source['src/visual-guides.css'].includes('@media(prefers-reduced-motion:reduce)'),'Reduced-motion adaptation missing');
