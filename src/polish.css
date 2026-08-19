@@ -8,6 +8,8 @@
   .site-nav::-webkit-scrollbar{display:none}
   .site-nav a{display:inline-flex;align-items:center;min-height:44px;flex:0 0 auto}
   .hero-content{padding-top:168px}
+  .tri,.two{grid-template-columns:minmax(0,1fr)}
+  .tri>*,.two>*{min-width:0}
   .page-shell,.tri,.two,.atlas,.acq,.plan-desk,.plate,.field,.schematic,.legend{min-width:0;max-width:100%}
   .tabs,.seg,.layers,.flow,.ribbon{min-width:0;max-width:100%}
   .canvas{width:100%;max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-inline:contain}
