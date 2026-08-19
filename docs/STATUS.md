@@ -72,7 +72,7 @@ The finalized publication rules are documented in `docs/FIELD_ATLAS_VISUAL_SYSTE
 - [x] Full-screen viewer interaction contract retained.
 - [x] Mobile grouped rails and no-document-overflow assertions added.
 - [x] Final visual-system rules documented.
-- [ ] Branch CI / exact browser screenshots verified before merge.
+- [x] Branch CI / exact browser screenshots verified before merge.
 
 ## Next product depth
 
