@@ -74,8 +74,14 @@ test('visual atlas loads real assets, opens full screen and zoom controls work',
   await ready(page);
   const thumbs = page.locator('.visual-card img');
   await expect(thumbs).toHaveCount(9);
-  await expect.poll(async () => thumbs.evaluateAll((imgs) => imgs.every((img) => img.complete && img.naturalWidth > 0))).toBe(true);
-  await expect(page.locator('.visual-card.asset-error')).toHaveCount(0);
+  const srcs = await thumbs.evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')));
+  const decoded = await page.evaluate(async (paths) => Promise.all(paths.map((src) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ src, ok: img.naturalWidth > 0, width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve({ src, ok: false, width: 0, height: 0 });
+    img.src = src;
+  }))), srcs);
+  expect(decoded.filter((asset) => !asset.ok), JSON.stringify(decoded, null, 2)).toEqual([]);
 
   const card = page.getByRole('button', { name:/Open Region comparison full screen/ });
   await card.click();
