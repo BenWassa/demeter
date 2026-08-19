@@ -24,7 +24,7 @@ const OUTCOMES=[
 const STORAGE='demeter.visual-audit.v1';
 const blankReviews=()=>Object.fromEntries(ITEMS.map(item=>[item.id,{preferredVariant:null,outcome:null,note:''}]));
 const defaultState=()=>({schema:'demeter.visual-audit.v1',reviews:blankReviews()});
-let state=loadState(),undoStack=[],redoStack=[],legacyUrls={};
+let state=loadState(),undoStack=[],redoStack=[],legacyUrls={},auditReady=false;
 
 const list=document.querySelector('#audit-list');
 const progress=document.querySelector('#audit-progress');
@@ -62,8 +62,8 @@ function exportData(){
 }
 function updateSummary(){
   const done=ITEMS.filter(item=>isReviewed(state.reviews[item.id])).length;
-  progress.textContent=`${done} / ${ITEMS.length} reviewed`;
-  undoButton.disabled=!undoStack.length;redoButton.disabled=!redoStack.length;
+  progress.textContent=auditReady?`${done} / ${ITEMS.length} reviewed`:'Loading comparison set…';
+  undoButton.disabled=!auditReady||!undoStack.length;redoButton.disabled=!auditReady||!redoStack.length;
   jsonOutput.value=JSON.stringify(exportData(),null,2);
 }
 function variantMarkup(item,review){
@@ -73,12 +73,12 @@ function variantMarkup(item,review){
     ...(item.extras||[])
   ];
   return variants.map(v=>`<article class="audit-variant ${review.preferredVariant===v.id?'selected':''}" data-variant="${v.id}">
-    <button class="audit-image-button" type="button" data-preview="${v.id}" ${v.pending?'disabled':''} aria-label="Preview ${v.label}">
-      ${v.pending?'<div class="audit-image-loading">Loading previous plate…</div>':`<img src="${v.src}" alt="${item.title} · ${v.label}" loading="lazy" decoding="async">`}
+    <button class="audit-image-button" type="button" data-preview="${v.id}" ${v.pending?'data-pending disabled':!auditReady?'disabled':''} aria-label="Preview ${v.label}">
+      ${v.pending?'<div class="audit-image-loading">Loading previous plate…</div>':`<img src="${v.src}" alt="${item.title} · ${v.label}" decoding="async">`}
     </button>
     <div class="audit-variant-foot">
       <span>${v.label}</span>
-      <button type="button" class="audit-select" data-select="${v.id}" ${v.pending?'disabled':''}>${review.preferredVariant===v.id?'Selected':'Prefer this'}</button>
+      <button type="button" class="audit-select" data-select="${v.id}" ${v.pending?'data-pending disabled':!auditReady?'disabled':''}>${review.preferredVariant===v.id?'Selected':'Prefer this'}</button>
     </div>
   </article>`).join('');
 }
@@ -93,9 +93,9 @@ function render(){
       </header>
       <div class="audit-variants">${variantMarkup(item,review)}</div>
       <div class="audit-outcomes" aria-label="Outcome for ${item.title}">
-        ${OUTCOMES.map(([id,label])=>`<button type="button" data-outcome="${id}" class="${review.outcome===id?'selected':''}">${label}</button>`).join('')}
+        ${OUTCOMES.map(([id,label])=>`<button type="button" data-outcome="${id}" class="${review.outcome===id?'selected':''}" ${!auditReady?'disabled':''}>${label}</button>`).join('')}
       </div>
-      <label class="audit-note">Note <textarea data-note rows="2" placeholder="What specifically do you like, dislike, or want preserved?">${escapeHtml(review.note)}</textarea></label>
+      <label class="audit-note">Note <textarea data-note rows="2" ${!auditReady?'disabled':''} placeholder="What specifically do you like, dislike, or want preserved?">${escapeHtml(review.note)}</textarea></label>
     </article>`;
   }).join('');
   updateSummary();
@@ -108,19 +108,20 @@ function openPreview(itemId,variantId){
 }
 
 list.addEventListener('click',event=>{
+  if(!auditReady)return;
   const itemEl=event.target.closest('.audit-item');if(!itemEl)return;const id=itemEl.dataset.item;
-  const select=event.target.closest('[data-select]');if(select){commit(s=>{s.reviews[id].preferredVariant=select.dataset.select;});return;}
-  const outcome=event.target.closest('[data-outcome]');if(outcome){commit(s=>{s.reviews[id].outcome=outcome.dataset.outcome;});return;}
-  const preview=event.target.closest('[data-preview]');if(preview)openPreview(id,preview.dataset.preview);
+  const select=event.target.closest('[data-select]');if(select&&!select.disabled){commit(s=>{s.reviews[id].preferredVariant=select.dataset.select;});return;}
+  const outcome=event.target.closest('[data-outcome]');if(outcome&&!outcome.disabled){commit(s=>{s.reviews[id].outcome=outcome.dataset.outcome;});return;}
+  const preview=event.target.closest('[data-preview]');if(preview&&!preview.disabled)openPreview(id,preview.dataset.preview);
 });
 list.addEventListener('change',event=>{
-  if(!event.target.matches('[data-note]'))return;const item=event.target.closest('.audit-item');const next=event.target.value;if(state.reviews[item.dataset.item].note===next)return;
+  if(!auditReady||!event.target.matches('[data-note]'))return;const item=event.target.closest('.audit-item');const next=event.target.value;if(state.reviews[item.dataset.item].note===next)return;
   commit(s=>{s.reviews[item.dataset.item].note=next;});
 });
 
 undoButton.addEventListener('click',undo);redoButton.addEventListener('click',redo);
 document.addEventListener('keydown',event=>{
-  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){
+  if(auditReady&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){
     event.preventDefault();event.shiftKey?redo():undo();
   }
 });
@@ -133,12 +134,21 @@ document.querySelector('#audit-download').addEventListener('click',()=>{
   const blob=new Blob([JSON.stringify(exportData(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='demeter-visual-audit.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),0);
 });
 document.querySelector('#audit-reset').addEventListener('click',()=>{
-  if(!confirm('Clear all visual-review choices and notes? You can undo immediately afterwards.'))return;commit(()=>{state=defaultState();});
+  if(!auditReady||!confirm('Clear all visual-review choices and notes? You can undo immediately afterwards.'))return;commit(()=>{state=defaultState();});
 });
 document.querySelector('#audit-viewer-close').addEventListener('click',()=>viewer.close());
 viewer.addEventListener('click',event=>{if(event.target===viewer)viewer.close();});
 viewer.addEventListener('close',()=>{viewerImage.removeAttribute('src');});
 
+async function settleImages(){
+  const images=[...list.querySelectorAll('.audit-variant img')];
+  await Promise.all(images.map(async image=>{
+    try{await image.decode();}catch{
+      if(!image.complete)await new Promise(resolve=>{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});});
+    }
+  }));
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+}
 async function loadLegacyBundle(){
   try{
     const response=await fetch('demeter-visual-guides-assets.zip');if(!response.ok)throw new Error(`Legacy bundle HTTP ${response.status}`);
@@ -149,6 +159,11 @@ async function loadLegacyBundle(){
     }
   }catch(error){console.warn('Legacy visual bundle unavailable',error);}
   render();
+  await settleImages();
+  auditReady=true;
+  document.documentElement.classList.add('audit-ready');
+  render();
+  await settleImages();
 }
 function parseZip(buffer){
   const view=new DataView(buffer),bytes=new Uint8Array(buffer);let eocd=-1;
