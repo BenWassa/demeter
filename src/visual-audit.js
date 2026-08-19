@@ -161,9 +161,9 @@ async function loadLegacyBundle(){
   render();
   await settleImages();
   auditReady=true;
+  list.querySelectorAll('button:not([data-pending]),textarea').forEach(control=>{control.disabled=false;});
+  updateSummary();
   document.documentElement.classList.add('audit-ready');
-  render();
-  await settleImages();
 }
 function parseZip(buffer){
   const view=new DataView(buffer),bytes=new Uint8Array(buffer);let eocd=-1;
