@@ -1,48 +1,76 @@
 # Project Demeter
 
-Project Demeter is an interactive planning tool for designing a comfortable, resilient, semi-off-grid life in Canada — combining regional comparisons, homestead systems, land-use blueprints, property archetypes, cost planning, and phased pathways to self-sufficiency.
+Project Demeter is an interactive planning atlas for designing a comfortable, resilient, semi-off-grid life in Canada — combining regional evidence, homestead systems, land-use blueprints, food/livestock planning, property archetypes, and phased pathways to self-sufficiency.
 
 ## Current state
 
-The repository currently contains the product foundation and a zero-build front-end concept.
+Demeter V1 is a dependency-light progressive web experience with a static fallback and browser-tested interactive layer.
 
-- [`PRODUCT.md`](PRODUCT.md) — durable product truth and seed user scenario
+- [`PRODUCT.md`](PRODUCT.md) — durable product truth and seed planning scenario
 - [`docs/PRD.md`](docs/PRD.md) — product requirements, information architecture, MVP and roadmap
-- [`DESIGN.md`](DESIGN.md) — Impeccable-informed visual and responsive design contract
+- [`DESIGN.md`](DESIGN.md) — visual and responsive design contract
+- [`docs/STATUS.md`](docs/STATUS.md) — build ledger and current release status
+- [`docs/REGION_RESEARCH.md`](docs/REGION_RESEARCH.md) — dated regional evidence baseline
 - [`docs/RESEARCH_PLAN.md`](docs/RESEARCH_PLAN.md) — evidence model and research backlog
-- [`index.html`](index.html) — interactive visual concept
+- [`docs/IMPECCABLE_REVIEW.md`](docs/IMPECCABLE_REVIEW.md) — critique, design passes, hardening and audit record
 
-## Prototype
+## V1 experience
 
-The prototype is intentionally dependency-free so the product and visual model can be tested before committing to an application framework.
+The current interface includes:
 
-Open `index.html` in a browser, or serve the repository root with any static server.
-
-The current concept includes:
-
-- cinematic field-atlas hero;
-- three-region comparison interaction;
-- water / power / heat / food system switcher;
-- authored 10-acre homestead blueprint;
-- acreage-capacity scenarios;
+- cinematic Canadian field-atlas hero;
+- personal Fit Lab with career-anchor and priority controls;
+- evidence-backed comparison of Southwest Ontario, Fraser Valley and Vancouver Island;
+- water, wastewater, power and heating dependency schematics;
+- genuinely distinct 3-, 10-, and 20-acre land-use plans;
+- toggleable food, livestock, infrastructure and privacy layers;
+- food-production ladder from kitchen garden to smallholding;
+- acquisition archetypes for fixer acreage, ready homestead and raw land;
 - phased transition roadmap;
-- responsive and reduced-motion behavior.
+- dated evidence register and source links;
+- responsive phone/tablet/desktop/short-landscape composition;
+- keyboard tab navigation, reduced-motion and forced-colors handling;
+- static fallback if the enhanced JavaScript experience fails.
 
-The region scores and planning values in the concept are illustrative unless explicitly sourced. They exist to prove the interface, not to masquerade as current research.
+## Development
+
+Requires Node.js 22+ for the verification/test toolchain.
+
+```bash
+npm install
+npm run verify
+npm run build
+npm test
+```
+
+`npm run serve` serves the repository at `http://127.0.0.1:4173` for browser testing.
+
+The production site remains static and builds to `dist/`. GitHub Actions runs deterministic verification plus Playwright tests at desktop and Pixel-sized mobile viewports. The Pages workflow deploys `dist/` from `main`.
+
+## Evidence policy
+
+Demeter distinguishes three things in the interface and docs:
+
+1. **Sourced facts** — dated observations from authoritative sources.
+2. **Volatile signals** — schedules, listings, prices and policy states that require refresh dates.
+3. **Planning judgments** — Demeter's explicit comparative interpretation, never presented as external fact.
+
+Every actual property still requires parcel-level due diligence for legal access, zoning, water, wastewater, hazards, building condition and local rules.
 
 ## Working design thesis
 
 **A modern Canadian field atlas:** documentary landscape photography, land-survey precision, agricultural field-guide clarity, and blueprints that carry real planning meaning.
 
-## Next build sequence
+## Next research depth
 
-1. Validate and expand the regional research model.
-2. Build the full three-region atlas and comparison view.
-3. Add the compact lifestyle planner and transparent recommendation logic.
-4. Expand the systems library.
-5. Author distinct 3-, 10-, and 20-acre blueprint scenarios.
-6. Choose the production framework once the interaction model is stable.
+V1 answers the shape of the problem. Future work should deepen rather than widen it first:
+
+1. repeatable property/listing samples for each candidate region;
+2. frost/growing-season, water, wildfire and flood evidence at candidate-town level;
+3. hospital, grocery, internet, tax and insurance comparisons;
+4. validated municipal livestock/agricultural-use rules for shortlisted municipalities;
+5. property-saving/export only after real purchase-search behavior justifies persistence.
 
 ## Image credit
 
-Prototype hero photography: Michael Hamments / Unsplash — farmland near Simcoe, Ontario.
+Hero photography: Michael Hamments / Unsplash — farmland near Simcoe, Ontario.
