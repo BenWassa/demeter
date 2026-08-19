@@ -5,7 +5,7 @@ const C={paper:'#f1eee4',snow:'#faf9f4',ink:'#142019',soft:'#465149',spruce:'#1f
 const esc=(value)=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const text=(x,y,value,cls='body',anchor='start')=>`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}">${esc(value)}</text>`;
 const line=(x1,y1,x2,y2,extra='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${extra}/>`;
-const bar=(x,y,value,max=4,fill=C.spruce)=>Array.from({length:max},(_,i)=>`<rect x="${x+i*22}" y="${y}" width="16" height="7" rx="1" fill="${i<value?fill:C.mist}"/>`).join('');
+const levelColumn=(x,baseline,value,fill)=>Array.from({length:4},(_,i)=>`<rect x="${x-9}" y="${baseline-8-i*11}" width="18" height="8" rx="1" fill="${i<value?fill:C.mist}"/>`).join('');
 const noteHeading=(y,label)=>`${text(892,y,label,'eyebrow')}${line(892,y+12,1126,y+12,'class="rule"')}`;
 const note=(y,label,value)=>`${text(892,y,label,'label')}${text(892,y+20,value,'note')}`;
 
@@ -36,17 +36,17 @@ const legendSwatch=(y,fill,label,stroke=C.ink,dash=false)=>`<rect x="892" y="${y
 
 const BLUEPRINTS={
   'blueprint-3-acre.svg':{
-    title:'3-acre compact homestead',dek:'A tight serviced core: daily food, workshop and privacy fit only when sun, access and wastewater space cooperate.',acre:'3 ACRES',scale:'≈ 110 × 110 m near-square parcel',reality:'Buy shape and sun, not headline acreage.',zones:[
+    title:'3-acre compact homestead',dek:'A tight serviced core: daily food, workshop and privacy fit only when sun, access and wastewater space cooperate.',acre:'3 ACRES',parcelM:110,scale:'≈ 110 × 110 m near-square parcel',reality:'Buy shape and sun, not headline acreage.',zones:[
       [205,485,175,92,'#dce4df','HOUSE','daily core'],[395,458,168,120,'#dce4c9','KITCHEN GARDEN','beds · compost'],[575,474,98,76,'#dbe4e6','GREENHOUSE','season extension'],[95,405,118,94,'#e2e4df','SHOP','tools · storage'],[330,320,250,92,'#dce4c9','ORCHARD','fruit · berries'],[600,316,155,105,'#eee4c9','CHICKENS','coop · run'],[86,226,668,62,'#cfd9d1','TREE BUFFER','privacy · habitat'],[555,584,186,48,'#eeeaf1','SEPTIC RESERVE','protect from traffic',true]],
     well:[172,560],house:[205,531],septic:[555,608]
   },
   'blueprint-10-acre.svg':{
-    title:'10-acre working homestead',dek:'A balanced layout keeps daily chores close while field, orchard and woodland absorb the extra distance.',acre:'10 ACRES',scale:'≈ 200 × 200 m near-square parcel',reality:'Options increase; daily walking should not.',zones:[
+    title:'10-acre working homestead',dek:'A balanced layout keeps daily chores close while field, orchard and woodland absorb the extra distance.',acre:'10 ACRES',parcelM:200,scale:'≈ 200 × 200 m near-square parcel',reality:'Options increase; daily walking should not.',zones:[
       [210,490,166,88,'#dce4df','HOUSE','mudroom · kitchen axis'],[392,452,175,126,'#dce4c9','KITCHEN GARDEN','intensive beds'],[580,470,96,78,'#dbe4e6','GREENHOUSE','propagation'],[92,407,122,100,'#e2e4df','SHOP / BARN','tools · storage'],[315,325,285,94,'#dce4c9','ORCHARD + BERRIES','perennial food'],[618,315,172,250,'#eee4c9','FLEX FIELD','poultry · grazing'],[86,218,704,70,'#cfd9d1','WOODLOT + TRAILS','privacy · fuel · habitat'],[520,592,218,48,'#eeeaf1','SEPTIC / RESERVE','conceptual siting',true]],
     well:[164,563],house:[210,534],septic:[520,616]
   },
   'blueprint-20-acre.svg':{
-    title:'20-acre smallholding',dek:'A real smallholding scale: rotational grazing, habitat and woodlot fit, with a matching rise in fencing, equipment and care.',acre:'20 ACRES',scale:'≈ 285 × 285 m near-square parcel',reality:'Extra land needs a job or it becomes maintenance.',zones:[
+    title:'20-acre smallholding',dek:'A real smallholding scale: rotational grazing, habitat and woodlot fit, with a matching rise in fencing, equipment and care.',acre:'20 ACRES',parcelM:285,scale:'≈ 285 × 285 m near-square parcel',reality:'Extra land needs a job or it becomes maintenance.',zones:[
       [128,505,142,78,'#dce4df','HOUSE','service core'],[286,480,142,104,'#dce4c9','GARDEN','household + surplus'],[442,500,84,64,'#dbe4e6','GLASSHOUSE','season extension'],[72,420,122,88,'#e2e4df','BARN / SHOP','feed · equipment'],[245,348,238,92,'#dce4c9','ORCHARD','fruit · berries'],[506,322,128,130,'#eee4c9','PADDOCK A','rotation'],[648,322,128,130,'#eee4c9','PADDOCK B','rotation'],[545,468,231,116,'#e7dfc7','FLEX FIELD','hay · rest'],[72,218,704,78,'#cfd9d1','WOODLOT / HABITAT','trails · fuel · buffer'],[300,600,180,40,'#eeeaf1','SEPTIC RESERVE','concept only',true]],
     well:[105,570],house:[128,544],septic:[300,620]
   }
@@ -54,18 +54,20 @@ const BLUEPRINTS={
 
 function blueprintPlate(data){
   const zones=data.zones.map(([x,y,w,h,fill,label,sub,dashed])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${fill}" stroke="${C.ink}" ${dashed?'stroke-dasharray="6 5"':''}/>${text(x+12,y+22,label,'zone-label')}${text(x+12,y+39,sub,'zone-sub')}`).join('');
+  const scalePx=Math.round(742*50/data.parcelM);
+  const scaleStart=74,scaleEnd=scaleStart+scalePx,scaleMid=scaleStart+scalePx/2;
   const graphic=`<rect x="70" y="194" width="742" height="462" fill="${C.snow}" stroke="${C.ink}" stroke-width="1.4"/>${zones}
-    <path d="M70 635 H812" stroke="${C.soft}" stroke-width="9"/><text x="86" y="650" class="mono" fill="${C.snow}">ALL-SEASON ROAD</text>
+    ${text(86,626,'ALL-SEASON ROAD','mono')}<path d="M70 638 H812" stroke="${C.soft}" stroke-width="9"/>
     <circle cx="${data.well[0]}" cy="${data.well[1]}" r="10" fill="${C.water}" stroke="${C.ink}"/>${text(data.well[0]+16,data.well[1]+4,'WELL','zone-label')}
     <path d="M${data.well[0]+10} ${data.well[1]} L${data.house[0]} ${data.house[1]}" stroke="${C.water}" stroke-width="3" fill="none"/>
     <path d="M${data.house[0]+88} ${data.house[1]+10} L${data.septic[0]} ${data.septic[1]}" stroke="${C.waste}" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
     ${text(76,184,data.scale,'mono')}
-    <path d="M720 678h80 M720 674v8 M760 674v8 M800 674v8" stroke="${C.ink}"/>${text(720,697,'approx. 50 m reference','small')}`;
+    <path d="M${scaleStart} 678H${scaleEnd} M${scaleStart} 674V682 M${scaleMid} 674V682 M${scaleEnd} 674V682" stroke="${C.ink}"/>${text(scaleStart,697,'50 m · approximate plan scale','small')}`;
   const notes=`${noteHeading(202,'KEY NOTES')}${note(232,'LAND MODEL',data.acre)}${note(278,'LAYOUT RULE',data.reality)}
     ${noteHeading(340,'LEGEND')}${legendSwatch(370,'#dce4df','home / serviced core')}${legendSwatch(394,'#dce4c9','food production')}${legendSwatch(418,'#eee4c9','field / livestock')}${legendSwatch(442,'#cfd9d1','woodlot / privacy')}${legendSwatch(466,'none','future / reserve',C.waste,true)}
     ${line(892,492,910,492,`stroke="${C.water}" stroke-width="3"`)}${text(920,496,'potable water path','note')}${line(892,516,910,516,`stroke="${C.waste}" stroke-width="3" stroke-dasharray="6 4"`)}${text(920,520,'wastewater path','note')}
     ${noteHeading(572,'ORIENTATION')}<path d="M916 658v-52m0 0-9 15m9-15 9 15" stroke="${C.ink}" fill="none"/>${text(916,596,'N','mono','middle')}${text(944,625,'North shown for','note')}${text(944,642,'reading only; adapt','note')}${text(944,659,'to actual parcel.','note')}`;
-  return shell({eyebrow:'Land · blueprint',title:data.title,dek:data.dek,graphic,notes,footer:'Illustrative near-rectangular parcel · not a survey or site-engineering plan'});
+  return shell({eyebrow:'Land · blueprint',title:data.title,dek:data.dek,graphic,notes,footer:'Illustrative near-rectangular parcel · approximate scale only · not a survey or site-engineering plan'});
 }
 
 function regionPlate(){
@@ -82,14 +84,15 @@ function regionPlate(){
 
 function independencePlate(){
   const rows=[
-    ['GRID STANDARD',1,1,1,'Simple operation; outage exposure remains.'],
-    ['GRID + BACKUP',1,2,3,'Generator or critical-load backup covers short failures.'],
-    ['SOLAR + BATTERY',2,2,4,'Daily resilience rises without abandoning the grid.'],
-    ['GRID-OPTIONAL',3,3,4,'Critical loads can run through longer outages.'],
-    ['FULL OFF-GRID',4,4,3,'Maximum independence; highest design and operating burden.']
+    ['GRID STANDARD','LOW','LOW','LOW','Simple operation; outage exposure remains.'],
+    ['GRID + BACKUP','LOW','MODERATE','MODERATE','Backup covers short failures without changing normal utility dependence.'],
+    ['SOLAR + BATTERY','MODERATE','MODERATE','HIGH','Daily resilience rises while the grid remains useful.'],
+    ['GRID-OPTIONAL','HIGH','HIGH','HIGH','Critical loads can bridge longer outages with more equipment to manage.'],
+    ['FULL OFF-GRID','VERY HIGH','VERY HIGH','DESIGN-DEPENDENT','Maximum independence; resilience depends on sizing, redundancy and operation.']
   ];
-  const graphic=`${text(272,190,'UTILITY INDEPENDENCE','label','middle')}${text(468,190,'OPERATING BURDEN','label','middle')}${text(664,190,'RESILIENCE POTENTIAL','label','middle')}${rows.map((r,i)=>{const y=230+i*82;return `${text(78,y,r[0],'label')}${bar(242,y-7,r[1],4,C.lake)}${bar(438,y-7,r[2],4,C.soil)}${bar(634,y-7,r[3],4,C.spruce)}${text(78,y+25,r[4],'small')}${line(78,y+45,808,y+45,'class="rule"')}`}).join('')}`;
-  const notes=`${noteHeading(202,'THREE SEPARATE QUESTIONS')}${note(236,'INDEPENDENCE','How little do utilities matter?')}${note(292,'BURDEN','How much must you operate?')}${note(348,'RESILIENCE','How gracefully does failure land?')}${noteHeading(420,'DESIGN PRINCIPLE')}${text(892,453,'Do not collapse these into','note')}${text(892,470,'one score. A system can be','note')}${text(892,487,'highly resilient without being','note')}${text(892,504,'fully independent.','note')}${noteHeading(566,'DEFAULT DEMETER BIAS')}${text(892,599,'Keep useful grid connections;','note')}${text(892,616,'add storage, backup power and','note')}${text(892,633,'redundancy where failure hurts.','note')}`;
+  const cell=(x,y,value,fill)=>`<rect x="${x}" y="${y-19}" width="168" height="28" fill="${fill}" stroke="${C.rule}"/>${text(x+84,y,value,'label','middle')}`;
+  const graphic=`${text(302,190,'UTILITY INDEPENDENCE','label','middle')}${text(500,190,'OPERATING BURDEN','label','middle')}${text(698,190,'RESILIENCE POTENTIAL','label','middle')}${rows.map((r,i)=>{const y=232+i*82;return `${text(78,y,r[0],'label')}${cell(218,y,r[1],'#e3e9e7')}${cell(416,y,r[2],'#eee6df')}${cell(614,y,r[3],'#e1e7dd')}${text(78,y+27,r[4],'small')}${line(78,y+47,812,y+47,'class="rule"')}`}).join('')}`;
+  const notes=`${noteHeading(202,'THREE SEPARATE QUESTIONS')}${note(236,'INDEPENDENCE','How little do utilities matter?')}${note(292,'BURDEN','How much must you operate?')}${note(348,'RESILIENCE','How gracefully does failure land?')}${noteHeading(420,'DESIGN PRINCIPLE')}${text(892,453,'Use qualitative descriptions,','note')}${text(892,470,'not a combined score. A system','note')}${text(892,487,'can be highly resilient without','note')}${text(892,504,'being fully independent.','note')}${noteHeading(566,'DEFAULT DEMETER BIAS')}${text(892,599,'Keep useful grid connections;','note')}${text(892,616,'add storage, backup power and','note')}${text(892,633,'redundancy where failure hurts.','note')}`;
   return shell({eyebrow:'Systems · resilience',title:'The independence spectrum',dek:'Utility independence, operating burden and resilience are related variables—not synonyms and not a single score.',graphic,notes});
 }
 
@@ -119,16 +122,16 @@ function foodPlate(){
 }
 
 function yearPlate({title,dek,region,tasks,labour,critical}){
-  const months=['J','F','M','A','M','J','J','A','S','O','N','D'];
+  const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const x0=102,step=58;
-  const graphic=`${months.map((m,i)=>`${text(x0+i*step,210,m,'label','middle')}${line(x0+i*step,225,x0+i*step,540,'class="soft-rule"')}`).join('')}
-    ${text(76,264,'LABOUR','eyebrow')}${labour.map((v,i)=>bar(x0-18+i*step,286,v,4,C.soil)).join('')}
-    ${text(76,352,'SYSTEMS CRITICALITY','eyebrow')}${critical.map((v,i)=>bar(x0-18+i*step,374,v,4,C.lake)).join('')}
-    ${line(76,430,806,430,'class="rule"')}${text(76,460,'SEASONAL WORK','eyebrow')}
-    <rect x="98" y="480" width="214" height="64" fill="#e7eadf" stroke="${C.rule}"/>${text(112,503,tasks[0][0],'label')}${text(112,525,tasks[0][1],'small')}
-    <rect x="326" y="480" width="214" height="64" fill="#eee4c9" stroke="${C.rule}"/>${text(340,503,tasks[1][0],'label')}${text(340,525,tasks[1][1],'small')}
-    <rect x="554" y="480" width="214" height="64" fill="#dfe6e5" stroke="${C.rule}"/>${text(568,503,tasks[2][0],'label')}${text(568,525,tasks[2][1],'small')}
-    ${text(76,590,region,'mono')}`;
+  const graphic=`${months.map((m,i)=>`${text(x0+i*step,210,m,'small','middle')}${line(x0+i*step,225,x0+i*step,420,'class="soft-rule"')}`).join('')}
+    ${text(76,254,'LABOUR INTENSITY','eyebrow')}${labour.map((v,i)=>levelColumn(x0+i*step,316,v,C.soil)).join('')}
+    ${text(76,346,'SYSTEMS CRITICALITY','eyebrow')}${critical.map((v,i)=>levelColumn(x0+i*step,408,v,C.lake)).join('')}
+    ${line(76,438,806,438,'class="rule"')}${text(76,468,'SEASONAL WORK','eyebrow')}
+    <rect x="98" y="488" width="214" height="64" fill="#e7eadf" stroke="${C.rule}"/>${text(112,511,tasks[0][0],'label')}${text(112,533,tasks[0][1],'small')}
+    <rect x="326" y="488" width="214" height="64" fill="#eee4c9" stroke="${C.rule}"/>${text(340,511,tasks[1][0],'label')}${text(340,533,tasks[1][1],'small')}
+    <rect x="554" y="488" width="214" height="64" fill="#dfe6e5" stroke="${C.rule}"/>${text(568,511,tasks[2][0],'label')}${text(568,533,tasks[2][1],'small')}
+    ${text(76,594,region,'mono')}`;
   const notes=`${noteHeading(202,'MEASURES')}${note(236,'LABOUR INTENSITY','Routine workload in the month')}${note(302,'SYSTEMS CRITICALITY','Consequence / urgency of failure')}${noteHeading(380,'LEVELS')}${text(892,414,'1 · low','note')}${text(892,434,'2 · moderate','note')}${text(892,454,'3 · high','note')}${text(892,474,'4 · peak / critical','note')}${noteHeading(532,'READING RULE')}${text(892,565,'Bars are ordinal planning','note')}${text(892,582,'levels, not measured hours or','note')}${text(892,599,'probabilities. Use them to see','note')}${text(892,616,'when workload and dependency','note')}${text(892,633,'stack on top of each other.','note')}`;
   return shell({eyebrow:'Seasons · operating year',title,dek,graphic,notes,footer:'Illustrative seasonal operating pattern · tune for crop mix, property systems and local weather'});
 }
