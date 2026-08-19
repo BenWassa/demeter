@@ -15,6 +15,17 @@ async function overflowReport(page) {
 
 async function expectNoDocumentOverflow(page){const report=await overflowReport(page);if(report.overflow>1)console.log('OVERFLOW_DIAGNOSTIC',JSON.stringify(report));expect(report.overflow).toBeLessThanOrEqual(1);}
 
+async function resetAtlasEvidencePosition(page){
+  await page.evaluate(()=>{
+    const root=document.documentElement,prior=root.style.scrollBehavior;
+    root.style.scrollBehavior='auto';
+    window.scrollTo(0,0);
+    document.querySelectorAll('.visual-rail').forEach(rail=>{rail.scrollLeft=0;});
+    root.style.scrollBehavior=prior;
+  });
+  await expect.poll(()=>page.evaluate(()=>Math.round(window.scrollY))).toBe(0);
+}
+
 test('home is a focused navigation hub', async ({ page },testInfo) => {
   await ready(page,'/');
   await expect(page.getByRole('heading',{level:1})).toContainText('Design the land around the life');
@@ -120,6 +131,7 @@ test('Field Atlas is curated, uncropped and every canonical plate opens', async 
   await page.keyboard.press('0');await expect(page.locator('#visual-zoom-level')).toHaveText('100%');
   await close.click();await expect(dialog).not.toBeVisible();await expect(card).toBeFocused();
   await expectNoDocumentOverflow(page);
+  await resetAtlasEvidencePosition(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-visuals.png`,fullPage:true});
 });
 
