@@ -18,10 +18,11 @@ const visualFiles = [
   'homestead-year-southwest-ontario.webp',
   'homestead-year-coastal-bc.webp'
 ];
+const pages=['index.html','regions.html','systems.html','land.html','visuals.html','plan.html'];
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
-for (const file of ['index.html', 'styles.css', 'app.js']) {
+for (const file of [...pages, 'styles.css', 'app.js']) {
   await cp(resolve(root, file), resolve(dist, file));
 }
 await cp(resolve(root, 'src'), resolve(dist, 'src'), { recursive: true });
@@ -29,9 +30,7 @@ await cp(resolve(root, 'src'), resolve(dist, 'src'), { recursive: true });
 try {
   await access(visualBundle);
   await execFileAsync('unzip', ['-q', '-o', visualBundle, '-d', dist]);
-  for (const file of visualFiles) {
-    await access(resolve(dist, 'assets', 'visual-guides', file));
-  }
+  for (const file of visualFiles) await access(resolve(dist, 'assets', 'visual-guides', file));
   console.log(`Included ${visualFiles.length} Demeter visual-guide assets.`);
 } catch (error) {
   console.error('Visual guide bundle is missing, invalid, or could not be extracted.', error);
@@ -39,4 +38,4 @@ try {
   throw error;
 }
 
-console.log('Built static Demeter site → dist/');
+console.log(`Built ${pages.length} focused Demeter pages → dist/`);
