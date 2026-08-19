@@ -22,6 +22,7 @@ test('home is a focused navigation hub', async ({ page },testInfo) => {
   await expect(page.locator('#fit')).toHaveCount(0);
   await expect(page.locator('#blueprint')).toHaveCount(0);
   await expect(page.getByRole('link',{name:'Explore regions',exact:true})).toHaveAttribute('href','regions.html');
+  await expect(page.locator('.route-feature img')).toHaveAttribute('src','assets/visual-guides/blueprint-10-acre.svg');
   await expectNoDocumentOverflow(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-home.png`,fullPage:true});
 });
@@ -81,13 +82,23 @@ test('tabs support keyboard navigation', async ({ page }) => {
   await expect(second).toBeFocused();await expect(second).toHaveAttribute('aria-selected','true');
 });
 
-test('visual atlas loads real assets and accessible zoom controls work', async ({ page },testInfo) => {
+test('Field Atlas is curated, uncropped and all canonical assets decode', async ({ page },testInfo) => {
   await ready(page,'/visuals.html');
   await page.waitForSelector('#visual-atlas');
+  await expect(page.getByRole('heading',{level:1})).toContainText('Reference plates');
+  await expect(page.locator('.visual-group')).toHaveCount(5);
+  for(const heading of ['Place','Land','Systems','Food','Seasons']) await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();
+
   const thumbs=page.locator('.visual-card img');await expect(thumbs).toHaveCount(9);
   const srcs=await thumbs.evaluateAll(imgs=>imgs.map(img=>img.getAttribute('src')));
-  const decoded=await page.evaluate(async paths=>Promise.all(paths.map(src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve({src,ok:img.naturalWidth>0});img.onerror=()=>resolve({src,ok:false});img.src=src;}))),srcs);
+  expect(srcs.every(src=>src?.endsWith('.svg'))).toBe(true);
+  const decoded=await page.evaluate(async paths=>Promise.all(paths.map(src=>new Promise(resolve=>{const img=new Image();img.onload=()=>resolve({src,ok:img.naturalWidth>0&&img.naturalHeight>0});img.onerror=()=>resolve({src,ok:false});img.src=src;}))),srcs);
   expect(decoded.filter(asset=>!asset.ok),JSON.stringify(decoded,null,2)).toEqual([]);
+  await expect(page.locator('[data-visual="acre20"]')).toBeVisible();
+  const imageStyle=await thumbs.first().evaluate(img=>({objectFit:getComputedStyle(img).objectFit,width:img.clientWidth,height:img.clientHeight,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight}));
+  expect(imageStyle.objectFit).not.toBe('cover');
+  expect(Math.abs((imageStyle.width/imageStyle.height)-(imageStyle.naturalWidth/imageStyle.naturalHeight))).toBeLessThan(.03);
+
   const card=page.getByRole('button',{name:/Open Region comparison full screen/});await card.click();
   const dialog=page.locator('#visual-lightbox'),image=page.locator('#visual-lightbox-image');
   await expect(dialog).toBeVisible();await expect.poll(async()=>image.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
@@ -97,6 +108,17 @@ test('visual atlas loads real assets and accessible zoom controls work', async (
   await page.getByRole('button',{name:'Close full-screen image'}).click();await expect(dialog).not.toBeVisible();await expect(card).toBeFocused();
   await expectNoDocumentOverflow(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-visuals.png`,fullPage:true});
+});
+
+test('mobile Field Atlas uses grouped horizontal rails without page overflow', async ({ page },testInfo) => {
+  test.skip(testInfo.project.name!=='mobile-chromium','Mobile publication release gate');
+  await ready(page,'/visuals.html');
+  await page.waitForSelector('#visual-atlas');
+  const rail=page.locator('#atlas-land .visual-rail');
+  const metrics=await rail.evaluate(el=>({clientWidth:el.clientWidth,scrollWidth:el.scrollWidth,snap:getComputedStyle(el).scrollSnapType}));
+  expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+  expect(metrics.snap).toContain('x');
+  await expectNoDocumentOverflow(page);
 });
 
 test('mobile visual atlas pinch gesture zooms directly', async ({ page, context },testInfo) => {
