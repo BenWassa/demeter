@@ -4,12 +4,13 @@ test('visual audit compares legacy/current, supports undo and exports JSON', asy
   await page.addInitScript(()=>localStorage.removeItem('demeter.visual-audit.v1'));
   await page.goto('/visual-audit.html');
   await expect(page.getByRole('heading',{level:1})).toContainText('Choose what Demeter should actually keep');
+  await page.waitForFunction(()=>document.documentElement.classList.contains('audit-ready'),null,{timeout:15000});
   const items=page.locator('.audit-item');
   await expect(items).toHaveCount(9);
 
   const first=items.first();
   const legacySelect=first.locator('[data-select="legacy"]');
-  await expect(legacySelect).toBeEnabled({timeout:10000});
+  await expect(legacySelect).toBeEnabled();
   await expect(first.locator('.audit-variant img')).toHaveCount(2);
   await expect.poll(async()=>first.locator('.audit-variant img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
   await expect(page.locator('[data-item="acre10"] .audit-variant')).toHaveCount(5);
