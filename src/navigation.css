@@ -1,0 +1,14 @@
+/* Demeter V1.2 information architecture: short home + focused workspaces. */
+.site-nav a[aria-current="page"]{color:var(--dm-ink);font-weight:600;box-shadow:inset 0 -2px var(--dm-harvest)}
+.home-gateway{background:var(--dm-paper)}
+.route-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;margin-top:42px}
+.route-grid>a{grid-column:span 4;display:flex;flex-direction:column;min-height:240px;padding:24px;border:1px solid var(--dm-rule);background:var(--dm-snow);color:var(--dm-ink);text-decoration:none;transition:transform .18s var(--dm-ease),border-color .18s ease,box-shadow .18s ease;overflow:hidden}
+.route-grid>a:hover,.route-grid>a:focus-visible{transform:translateY(-2px);border-color:var(--dm-spruce);box-shadow:0 16px 36px rgb(20 32 25/.09)}
+.route-grid small{font:500 .7rem/1.3 var(--dm-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--dm-faint)}
+.route-grid strong{margin-top:auto;padding-top:40px;font:500 2rem/1 var(--dm-serif);letter-spacing:-.02em}
+.route-grid span{margin-top:12px;max-width:42ch;color:var(--dm-soft);font-size:.9rem;line-height:1.45}
+.route-grid .route-feature{grid-column:span 8;display:grid;grid-template-columns:minmax(0,.75fr) minmax(260px,1.25fr);grid-template-rows:auto 1fr auto;column-gap:28px;background:var(--dm-deep);color:var(--dm-snow)}
+.route-feature small,.route-feature span{color:#d6ded8}.route-feature strong{grid-column:1;margin-top:auto}.route-feature span{grid-column:1}.route-feature img{grid-column:2;grid-row:1/4;width:100%;height:100%;min-height:280px;object-fit:cover;object-position:top center;border:1px solid rgb(255 255 255/.18)}
+@media(max-width:900px){.route-grid>a,.route-grid .route-feature{grid-column:span 6}.route-grid .route-feature{display:flex}.route-feature img{order:-1;height:260px;min-height:0;margin:-24px -24px 24px;width:calc(100% + 48px)}}
+@media(max-width:620px){.route-grid{gap:12px;margin-top:28px}.route-grid>a,.route-grid .route-feature{grid-column:1/-1;min-height:0;padding:20px}.route-grid strong{padding-top:28px;font-size:1.7rem}.route-feature img{height:220px;margin:-20px -20px 20px;width:calc(100% + 40px)}.home-gateway{padding-top:64px}}
+@media(prefers-reduced-motion:reduce){.route-grid>a{transition:none}}
