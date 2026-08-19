@@ -38,7 +38,7 @@ export function initVisuals(){
   const close=document.querySelector('.visual-close');
   const pointers=new Map();
   const starts=new Map();
-  let opener=null,scale=1,x=0,y=0,drag=null,pinch=null,lastTap=null;
+  let opener=null,scale=1,x=0,y=0,drag=null,pinch=null,lastTap=null,lastPointerType='mouse';
   const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
   const render=()=>{image.style.transform=`translate(${x}px,${y}px) scale(${scale})`;level.value=`${Math.round(scale*100)}%`;level.textContent=level.value;stage.classList.toggle('is-zoomed',scale>1.01);};
   const reset=()=>{scale=1;x=0;y=0;drag=null;pinch=null;render();};
@@ -62,9 +62,10 @@ export function initVisuals(){
   document.querySelector('[data-zoom="out"]').addEventListener('click',()=>zoom(-.25));
   document.querySelector('[data-zoom="reset"]').addEventListener('click',reset);
   stage.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?.2:-.2,e.clientX,e.clientY);},{passive:false});
-  stage.addEventListener('dblclick',e=>{if(e.pointerType==='touch')return;e.preventDefault();scale>1?reset():zoomTo(2,e.clientX,e.clientY);});
+  stage.addEventListener('dblclick',e=>{if(lastPointerType==='touch')return;e.preventDefault();scale>1?reset():zoomTo(2,e.clientX,e.clientY);});
 
   stage.addEventListener('pointerdown',e=>{
+    lastPointerType=e.pointerType||'mouse';
     stage.setPointerCapture(e.pointerId);
     starts.set(e.pointerId,{x:e.clientX,y:e.clientY,time:performance.now()});
     if(e.pointerType==='touch'){
