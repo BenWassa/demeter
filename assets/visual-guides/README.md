@@ -23,4 +23,4 @@ The renderer still produces all nine generated plates first so they remain avail
 
 Do not replace an approved illustrated master merely to force every plate through one renderer. Publication consistency comes from typography, palette, information hierarchy, restrained framing and family-level conventions; useful illustration and strong composition should be preserved.
 
-The temporary visual-audit assets and 10-acre alternatives remain source/reference material until their separate audit decisions are implemented.
+The Land / Food audit choices are already recorded. Their final source assets and responsive variants remain a separate implementation step; the temporary visual-audit bundle and 10-acre alternatives stay available until that work is complete.
