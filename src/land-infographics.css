@@ -1,6 +1,7 @@
 /* Infographic-first Land workspace. Field Atlas plates are primary; HTML controls stay secondary. */
 body[data-page="land"] #blueprint,body[data-page="land"] #production{background:var(--dm-paper)}
 body[data-page="land"] #blueprint{padding-bottom:76px}body[data-page="land"] #production{padding-top:76px;border-top:1px solid var(--dm-rule)}
+body[data-page="land"] .plan-desk[hidden],body[data-page="land"] .layers[hidden],body[data-page="land"] .ribbon[hidden]{display:none!important}
 .infographic-host{margin-top:24px}.food-infographic-host{margin-top:26px}
 .infographic-primary{display:grid;width:100%;padding:0;border:1px solid var(--dm-rule);background:var(--dm-snow);color:var(--dm-ink);text-align:left;cursor:zoom-in;overflow:hidden;box-shadow:0 12px 34px rgba(28,36,30,.07);transition:border-color .16s ease,transform .16s var(--dm-ease)}
 .infographic-primary:hover,.infographic-primary:focus-visible{border-color:var(--dm-spruce);transform:translateY(-2px)}
