@@ -1,4 +1,3 @@
-import { production } from './land.js';
 import { visuals } from './visuals.js';
 
 const blueprintByAcreage={
@@ -16,6 +15,10 @@ const addStyle=(href)=>{
 };
 
 const visualById=(id)=>visuals.find((visual)=>visual.id===id);
+
+function plateButton(visual,id){
+  return `<button class="infographic-primary" id="${id}" type="button" data-infographic-visual="${visual.id}" data-infographic-source="${visual.src}" aria-label="Open ${visual.title} full screen"><span class="infographic-image-wrap"><img src="${visual.src}" alt="${visual.alt}" decoding="async"></span><span class="infographic-primary-copy"><small>${visual.kicker}</small><strong>${visual.title}</strong><span>${visual.description}</span><em>Tap to inspect full screen</em></span></button>`;
+}
 
 function viewerMarkup(){
   return `<dialog class="visual-lightbox" id="land-visual-lightbox" aria-labelledby="land-visual-lightbox-heading"><div class="visual-lightbox-shell"><header class="visual-lightbox-bar"><div class="visual-lightbox-title"><small id="land-visual-lightbox-kicker">Field atlas plate</small><strong id="land-visual-lightbox-heading"></strong></div><div class="visual-zoom" aria-label="Image zoom controls"><button type="button" data-land-zoom="out" aria-label="Zoom out">−</button><output id="land-visual-zoom-level">100%</output><button type="button" data-land-zoom="in" aria-label="Zoom in">+</button><button type="button" data-land-zoom="reset">Reset</button></div><button class="visual-close" type="button" aria-label="Close full-screen image">×</button></header><div class="visual-stage" id="land-visual-stage"><img id="land-visual-lightbox-image" alt=""><p class="visual-hint"><span class="touch-hint">Pinch to zoom · drag to pan · double-tap to reset</span><span class="pointer-hint">Wheel or +/− to zoom · drag to pan · 0 to reset</span></p></div></div></dialog>`;
@@ -76,13 +79,6 @@ function initInlineViewer(){
   dialog.addEventListener('keydown',(event)=>{if(event.key==='+'||event.key==='='){event.preventDefault();zoom(.25);}if(event.key==='-'){event.preventDefault();zoom(-.25);}if(event.key==='0'){event.preventDefault();reset();}});
 }
 
-function renderFoodDetail(key){
-  const detail=document.querySelector('#food-detail');
-  const item=production[key];
-  if(!detail||!item) return;
-  detail.innerHTML=`<div class="food-detail-head"><div><small>${item.code}</small><h3>${item.name}</h3></div><strong>Routine load · ${item.load}</strong></div><p>${item.copy}</p><div class="food-detail-grid"><div><b>Build first</b><ul>${item.build.map((value)=>`<li>${value}</li>`).join('')}</ul></div><div><b>Livestock fit</b><ul>${item.animals.map(([name,value])=>`<li><span>${name}</span><strong>${value}</strong></li>`).join('')}</ul></div><div><b>What gets harder</b><ul>${item.friction.map((value)=>`<li>${value}</li>`).join('')}</ul></div></div>`;
-}
-
 export function initLandInfographics(){
   if(document.body.dataset.page!=='land') return;
   addStyle('src/visual-guides.css');
@@ -90,18 +86,26 @@ export function initLandInfographics(){
 
   const blueprint=document.querySelector('#blueprint');
   if(blueprint){
-    const initial=visualById('acre10');
-    blueprint.innerHTML=`<div class="page-shell"><header class="split infographic-section-head"><div><p class="marker">Land blueprints</p><h2>Read the whole property as one system.</h2><p>The authored Field Atlas plate is now the primary plan. Switch acreage, then open the plate full screen to inspect the details.</p></div><div class="seg infographic-switch" id="infographic-acre-buttons" role="tablist" aria-label="Blueprint acreage"><button type="button" role="tab" data-acres="3" aria-selected="false">3 acres</button><button type="button" role="tab" class="on" data-acres="10" aria-selected="true">10 acres</button><button type="button" role="tab" data-acres="20" aria-selected="false">20 acres</button></div></header><button class="infographic-primary" id="land-infographic-trigger" type="button" data-infographic-visual="acre10" data-infographic-source="${initial.src}" aria-label="Open ${initial.title} full screen"><span class="infographic-image-wrap"><img id="land-infographic-image" src="${initial.src}" alt="${initial.alt}" decoding="async"></span><span class="infographic-primary-copy"><small>Field Atlas plate</small><strong id="land-infographic-title">${initial.title}</strong><span id="land-infographic-description">${initial.description}</span><em>Tap to inspect full screen</em></span></button></div>`;
+    const shell=blueprint.querySelector('.page-shell');
+    const layers=blueprint.querySelector('.layers');
+    const desk=blueprint.querySelector('.plan-desk');
+    if(layers) layers.hidden=true;
+    if(desk) desk.hidden=true;
 
-    const buttons=[...blueprint.querySelectorAll('#infographic-acre-buttons button')];
-    const trigger=blueprint.querySelector('#land-infographic-trigger');
-    const image=blueprint.querySelector('#land-infographic-image');
-    const title=blueprint.querySelector('#land-infographic-title');
-    const description=blueprint.querySelector('#land-infographic-description');
+    const initial=visualById('acre10');
+    const host=document.createElement('div');
+    host.className='infographic-host';
+    host.innerHTML=plateButton(initial,'land-infographic-trigger');
+    (layers||blueprint.querySelector('header'))?.insertAdjacentElement('afterend',host);
+
+    const trigger=host.querySelector('#land-infographic-trigger');
+    const image=trigger.querySelector('img');
+    const title=trigger.querySelector('.infographic-primary-copy strong');
+    const description=trigger.querySelector('.infographic-primary-copy>span');
+    const buttons=[...blueprint.querySelectorAll('#acre-buttons button')];
     const select=(acreage)=>{
       const id=blueprintByAcreage[acreage],visual=visualById(id);
       if(!visual)return;
-      buttons.forEach((button)=>{const active=button.dataset.acres===acreage;button.classList.toggle('on',active);button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;});
       trigger.dataset.infographicVisual=id;
       trigger.dataset.infographicSource=visual.src;
       trigger.setAttribute('aria-label',`Open ${visual.title} full screen`);
@@ -110,16 +114,25 @@ export function initLandInfographics(){
       title.textContent=visual.title;
       description.textContent=visual.description;
     };
-    buttons.forEach((button,index)=>{button.addEventListener('click',()=>select(button.dataset.acres));button.addEventListener('keydown',(event)=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();let next=index;if(event.key==='ArrowRight')next=(index+1)%buttons.length;if(event.key==='ArrowLeft')next=(index-1+buttons.length)%buttons.length;if(event.key==='Home')next=0;if(event.key==='End')next=buttons.length-1;buttons[next].focus();buttons[next].click();});});
+    buttons.forEach((button)=>button.addEventListener('click',()=>select(button.dataset.acres)));
   }
 
   const food=document.querySelector('#production');
   if(food){
+    const shell=food.querySelector('.page-shell');
+    const detail=food.querySelector('.field');
+    const ribbon=food.querySelector('.ribbon');
     const visual=visualById('food');
-    food.innerHTML=`<div class="page-shell"><header class="split infographic-section-head"><div><p class="marker">Food production</p><h2>See the pathways before choosing the workload.</h2><p>The Field Atlas infographic is the primary explanation. The operating-depth controls below remain as supporting detail.</p></div></header><button class="infographic-primary" type="button" data-infographic-visual="food" data-infographic-source="${visual.src}" aria-label="Open ${visual.title} full screen"><span class="infographic-image-wrap"><img id="food-infographic-image" src="${visual.src}" alt="${visual.alt}" loading="lazy" decoding="async"></span><span class="infographic-primary-copy"><small>${visual.kicker}</small><strong>${visual.title}</strong><span>${visual.description}</span><em>Tap to inspect full screen</em></span></button><section class="food-support" aria-labelledby="food-support-title"><div class="food-support-head"><div><small>Supporting detail</small><h3 id="food-support-title">Choose an operating depth.</h3></div><div class="seg" id="food-support-tabs" role="tablist" aria-label="Food production depth"><button type="button" role="tab" class="on" data-food="garden" aria-selected="true">Kitchen</button><button type="button" role="tab" data-food="household" aria-selected="false">Household</button><button type="button" role="tab" data-food="smallholding" aria-selected="false">Smallholding</button></div></div><article id="food-detail" aria-live="polite"></article></section></div>`;
-    const tabs=[...food.querySelectorAll('#food-support-tabs button')];
-    tabs.forEach((tab,index)=>{tab.addEventListener('click',()=>{tabs.forEach((button)=>{const active=button===tab;button.classList.toggle('on',active);button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;});renderFoodDetail(tab.dataset.food);});tab.addEventListener('keydown',(event)=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();let next=index;if(event.key==='ArrowRight')next=(index+1)%tabs.length;if(event.key==='ArrowLeft')next=(index-1+tabs.length)%tabs.length;if(event.key==='Home')next=0;if(event.key==='End')next=tabs.length-1;tabs[next].focus();tabs[next].click();});});
-    renderFoodDetail('garden');
+    if(shell){
+      shell.classList.remove('two');
+      shell.classList.add('food-infographic-layout');
+      const host=document.createElement('div');
+      host.className='infographic-host food-infographic-host';
+      host.innerHTML=plateButton(visual,'food-infographic-trigger');
+      shell.insertBefore(host,detail||null);
+    }
+    detail?.classList.add('food-detail-support');
+    if(ribbon) ribbon.hidden=true;
   }
 
   initInlineViewer();
