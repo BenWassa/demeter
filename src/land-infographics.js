@@ -1,5 +1,5 @@
 import { visuals } from './visuals.js';
-import { approvedVisualSources } from './approved-visuals.js';
+import { approvedVisualSources, approvedVisualPortraitSources, preferredVisualSource } from './approved-visuals.js';
 
 const blueprintByAcreage={
   '3':'acre3',
@@ -18,9 +18,15 @@ const addStyle=(href)=>{
 const visualById=(id)=>visuals.find((visual)=>visual.id===id);
 const displaySource=(visual)=>approvedVisualSources[visual?.id]||visual?.src;
 
+function imageMarkup(visual){
+  const landscape=displaySource(visual);
+  const portrait=approvedVisualPortraitSources[visual?.id];
+  return `<picture>${portrait?`<source media="(max-width: 720px)" srcset="${portrait}" data-infographic-portrait>`:''}<img src="${landscape}" alt="${visual.alt}" decoding="async"></picture>`;
+}
+
 function plateButton(visual,id){
   const source=displaySource(visual);
-  return `<button class="infographic-primary" id="${id}" type="button" data-infographic-visual="${visual.id}" data-infographic-source="${source}" aria-label="Open ${visual.title} full screen"><span class="infographic-image-wrap"><img src="${source}" alt="${visual.alt}" decoding="async"></span><span class="infographic-primary-copy"><small>${visual.kicker}</small><strong>${visual.title}</strong><span>${visual.description}</span><em>Tap to inspect full screen</em></span></button>`;
+  return `<button class="infographic-primary" id="${id}" type="button" data-infographic-visual="${visual.id}" data-infographic-source="${source}" aria-label="Open ${visual.title} full screen"><span class="infographic-image-wrap">${imageMarkup(visual)}</span><span class="infographic-primary-copy"><small>${visual.kicker}</small><strong>${visual.title}</strong><span>${visual.description}</span><em>Tap to inspect full screen</em></span></button>`;
 }
 
 function viewerMarkup(){
@@ -58,7 +64,7 @@ function initInlineViewer(){
     opener=trigger;
     heading.textContent=visual.title;
     kicker.textContent=visual.kicker;
-    image.src=trigger.dataset.infographicSource||displaySource(visual);
+    image.src=trigger.querySelector('img')?.currentSrc||preferredVisualSource(visual.id)||trigger.dataset.infographicSource||displaySource(visual);
     image.alt=visual.alt;
     reset();
     dialog.showModal();
@@ -101,6 +107,7 @@ export function initLandInfographics(){
     (layers||blueprint.querySelector('header'))?.insertAdjacentElement('afterend',host);
 
     const trigger=host.querySelector('#land-infographic-trigger');
+    const picture=trigger.querySelector('picture');
     const image=trigger.querySelector('img');
     const kickerLabel=trigger.querySelector('.infographic-primary-copy small');
     const title=trigger.querySelector('.infographic-primary-copy strong');
@@ -109,6 +116,18 @@ export function initLandInfographics(){
     const select=(acreage)=>{
       const id=blueprintByAcreage[acreage],visual=visualById(id),source=approvedVisualSources[id];
       if(!visual||!source)return;
+      const portrait=approvedVisualPortraitSources[id];
+      let portraitSource=picture.querySelector('[data-infographic-portrait]');
+      if(portrait&&!portraitSource){
+        portraitSource=document.createElement('source');
+        portraitSource.media='(max-width: 720px)';
+        portraitSource.dataset.infographicPortrait='';
+        picture.prepend(portraitSource);
+      }
+      if(portraitSource){
+        if(portrait) portraitSource.srcset=portrait;
+        else portraitSource.remove();
+      }
       trigger.dataset.infographicVisual=id;
       trigger.dataset.infographicSource=source;
       trigger.setAttribute('aria-label',`Open ${visual.title} full screen`);
@@ -118,24 +137,23 @@ export function initLandInfographics(){
       title.textContent=visual.title;
       description.textContent=visual.description;
     };
-    buttons.forEach((button)=>{
-      if(button.dataset.acres==='20'){
-        button.hidden=true;
-        button.disabled=true;
-        return;
-      }
-      button.addEventListener('click',()=>select(button.dataset.acres));
-    });
+    buttons.forEach((button)=>button.addEventListener('click',()=>select(button.dataset.acres)));
   }
 
-  // Keep the useful Food operating-depth detail, but do not publish the
-  // schematic SVG plate or the rejected decorative legacy raster as the
-  // primary infographic. A clean approved Food master will restore that plate.
   const food=document.querySelector('#production');
   if(food){
     const shell=food.querySelector('.page-shell');
-    const oldPrimary=shell?.querySelector('.food-infographic-host');
-    oldPrimary?.remove();
+    const intro=shell?.firstElementChild;
+    const detail=food.querySelector('article.field');
+    const visual=visualById('food');
+    if(shell&&intro&&detail&&visual){
+      shell.classList.add('food-infographic-layout');
+      detail.classList.add('food-detail-support');
+      const host=document.createElement('div');
+      host.className='food-infographic-host';
+      host.innerHTML=plateButton(visual,'food-infographic-trigger');
+      intro.insertAdjacentElement('afterend',host);
+    }
   }
 
   initInlineViewer();

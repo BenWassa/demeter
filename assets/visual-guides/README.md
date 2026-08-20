@@ -10,13 +10,13 @@
 - `blueprint-10-acre-landscape.png`
 - `blueprint-20-acre-landscape.png`
 
-`blueprint-10-acre.png` is retained as the current runtime compatibility filename until the site wiring is migrated to the explicit `-landscape` name.
-
 ### Blueprint — portrait family
 
 - `blueprint-3-acre-portrait.png`
 - `blueprint-10-acre-portrait.png`
 - `blueprint-20-acre-portrait.png`
+
+The live runtime uses landscape blueprint masters on larger viewports and the portrait family at `720px` and below.
 
 ### Food
 
@@ -36,7 +36,9 @@ Superseded, rejected, or comparison-only variants belong under `assets/visual-gu
 
 ## Runtime policy
 
-Generated SVG plates remain deterministic fallbacks. `src/approved-visuals.js` selects explicitly approved illustrated masters for the current product where wiring has been completed. Organizing a master into this folder does not by itself imply that the runtime has been switched to it.
+Generated SVG plates remain deterministic fallbacks. `src/approved-visuals.js` selects the approved illustrated masters for live rendering while preserving the SVG source contract as a resilient fallback.
+
+The current live atlas includes all nine subjects. The 3 / 10 / 20-acre blueprints and Food Production Pathways are no longer suppressed or supplied by legacy raster artwork.
 
 Do not replace a stronger approved illustrated master merely to force every plate through one renderer. Publication consistency comes from typography, palette, information hierarchy, restrained framing, and family-level conventions.
 

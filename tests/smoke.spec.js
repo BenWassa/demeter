@@ -33,7 +33,7 @@ test('home is a focused navigation hub', async ({ page },testInfo) => {
   await expect(page.locator('#fit')).toHaveCount(0);
   await expect(page.locator('#blueprint')).toHaveCount(0);
   await expect(page.getByRole('link',{name:'Explore regions',exact:true})).toHaveAttribute('href','regions.html');
-  await expect(page.locator('.route-feature img')).toHaveAttribute('src','assets/visual-guides/blueprint-10-acre.png');
+  await expect(page.locator('.route-feature img')).toHaveAttribute('src','assets/visual-guides/blueprint-10-acre-landscape.png');
   await expectNoDocumentOverflow(page);
   await page.screenshot({path:`artifacts/${testInfo.project.name}-home.png`,fullPage:true});
 });
@@ -64,12 +64,15 @@ test('systems workspace remains interactive', async ({ page }) => {
   await expectNoDocumentOverflow(page);
 });
 
-test('land workspace exposes approved acreage art and production detail', async ({ page }) => {
+test('land workspace exposes complete acreage art and production detail', async ({ page }) => {
   await ready(page,'/land.html');
   await page.getByRole('button',{name:'3 acres'}).click();
   await expect(page.locator('#plan-label')).toContainText('3-acre');
-  await expect(page.locator('#land-infographic-trigger img')).toHaveAttribute('src','assets/visual-guides/blueprint-3-acre.webp');
-  await expect(page.getByRole('button',{name:'20 acres'})).toBeHidden();
+  await expect(page.locator('#land-infographic-trigger img')).toHaveAttribute('src','assets/visual-guides/blueprint-3-acre-landscape.png');
+  await expect(page.getByRole('button',{name:'20 acres'})).toBeVisible();
+  await page.getByRole('button',{name:'20 acres'}).click();
+  await expect(page.locator('#land-infographic-trigger img')).toHaveAttribute('src','assets/visual-guides/blueprint-20-acre-landscape.png');
+  await expect(page.locator('#food-infographic-trigger img')).toHaveAttribute('src','assets/visual-guides/food-production-pathways.png');
   await page.getByRole('tab',{name:'Household'}).click();
   await expect(page.locator('#food-name')).toHaveText('Household food system');
   await expectNoDocumentOverflow(page);
@@ -95,15 +98,14 @@ test('Field Atlas is curated, uncropped and every live plate opens', async ({ pa
   await ready(page,'/visuals.html');
   await page.waitForSelector('#visual-atlas');
   await expect(page.getByRole('heading',{level:1})).toContainText('Reference plates');
-  await expect(page.locator('.visual-group')).toHaveCount(4);
-  for(const heading of ['Place','Land','Systems','Seasons']) await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();
-  await expect(page.getByRole('heading',{name:'Food',exact:true})).toHaveCount(0);
+  await expect(page.locator('.visual-group')).toHaveCount(5);
+  for(const heading of ['Place','Land','Systems','Food','Seasons']) await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();
 
-  const thumbs=page.locator('.visual-card img');await expect(thumbs).toHaveCount(7);
+  const thumbs=page.locator('.visual-card img');await expect(thumbs).toHaveCount(9);
   const srcs=await thumbs.evaluateAll(imgs=>imgs.map(img=>img.getAttribute('src')));
   expect(srcs.every(src=>src?.endsWith('.svg'))).toBe(true);
-  await expect(page.locator('[data-visual="acre20"]')).toHaveCount(0);
-  await expect(page.locator('[data-visual="food"]')).toHaveCount(0);
+  await expect(page.locator('[data-visual="acre20"]')).toHaveCount(1);
+  await expect(page.locator('[data-visual="food"]')).toHaveCount(1);
   const imageStyle=await thumbs.first().evaluate(img=>({objectFit:getComputedStyle(img).objectFit,width:img.clientWidth,height:img.clientHeight,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight}));
   expect(imageStyle.objectFit).not.toBe('cover');
   expect(Math.abs((imageStyle.width/imageStyle.height)-(imageStyle.naturalWidth/imageStyle.naturalHeight))).toBeLessThan(.03);
@@ -111,7 +113,7 @@ test('Field Atlas is curated, uncropped and every live plate opens', async ({ pa
   const dialog=page.locator('#visual-lightbox'),image=page.locator('#visual-lightbox-image');
   const close=page.getByRole('button',{name:'Close full-screen image'});
   const cards=page.locator('.visual-card');
-  for(let i=0;i<7;i++){
+  for(let i=0;i<9;i++){
     const current=cards.nth(i);
     await current.click();
     await expect(dialog).toBeVisible();
@@ -140,6 +142,7 @@ test('mobile Field Atlas uses grouped horizontal rails without page overflow', a
   const metrics=await rail.evaluate(el=>({clientWidth:el.clientWidth,scrollWidth:el.scrollWidth,snap:getComputedStyle(el).scrollSnapType}));
   expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
   expect(metrics.snap).toContain('x');
+  await expect.poll(()=>page.locator('[data-visual="acre10"] img').evaluate(img=>img.currentSrc.endsWith('assets/visual-guides/blueprint-10-acre-portrait.png'))).toBe(true);
   await expectNoDocumentOverflow(page);
 });
 
