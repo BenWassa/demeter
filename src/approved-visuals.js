@@ -47,6 +47,13 @@ export function applyApprovedVisuals(){
     document.querySelector('.visual-index a[href="#atlas-food"]')?.remove();
   }
 
+  const atlasIntro=document.querySelector('.visual-atlas-head>p:not(.marker)');
+  if(atlasIntro) atlasIntro.textContent='Read by question, then open any plate for full-screen inspection. Only approved infographic masters are shown live; the 20-acre and Food plates return when their clean replacements are ready.';
+  const seasonsIndex=document.querySelector('.visual-index a[href="#atlas-seasons"] span');
+  if(seasonsIndex) seasonsIndex.textContent='04';
+  const seasonsGroupNumber=document.querySelector('#atlas-seasons .visual-group-head small');
+  if(seasonsGroupNumber) seasonsGroupNumber.textContent='04';
+
   dialog?.addEventListener('close',()=>{
     if(!lightbox) return;
     lightbox.removeAttribute('srcset');
