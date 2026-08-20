@@ -53,7 +53,7 @@ Generated plates currently remain live for:
 - 20-acre smallholding;
 - Food production pathways.
 
-The remaining Land / Food choices are intentionally still open pending their separate audited source decisions.
+The Land / Food audit choices are already recorded; their source assets and responsive variants remain a separate implementation step.
 
 ## Atlas information architecture
 
@@ -119,7 +119,7 @@ Show water, wastewater, power and heat as readable dependency chains, with the r
 
 ### Food production pathways
 
-Progression should communicate deeper infrastructure and daily commitment without implying a lifestyle-status ladder. The final visual treatment remains pending the audited legacy decision.
+Progression should communicate deeper infrastructure and daily commitment without implying a lifestyle-status ladder. The audited legacy preference should be preserved when its production asset is wired.
 
 ### Homestead year
 
