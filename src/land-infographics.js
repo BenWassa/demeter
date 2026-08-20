@@ -1,4 +1,5 @@
 import { visuals } from './visuals.js';
+import { approvedVisualSources } from './approved-visuals.js';
 
 const blueprintByAcreage={
   '3':'acre3',
@@ -15,9 +16,11 @@ const addStyle=(href)=>{
 };
 
 const visualById=(id)=>visuals.find((visual)=>visual.id===id);
+const displaySource=(visual)=>approvedVisualSources[visual?.id]||visual?.src;
 
 function plateButton(visual,id){
-  return `<button class="infographic-primary" id="${id}" type="button" data-infographic-visual="${visual.id}" data-infographic-source="${visual.src}" aria-label="Open ${visual.title} full screen"><span class="infographic-image-wrap"><img src="${visual.src}" alt="${visual.alt}" decoding="async"></span><span class="infographic-primary-copy"><small>${visual.kicker}</small><strong>${visual.title}</strong><span>${visual.description}</span><em>Tap to inspect full screen</em></span></button>`;
+  const source=displaySource(visual);
+  return `<button class="infographic-primary" id="${id}" type="button" data-infographic-visual="${visual.id}" data-infographic-source="${source}" aria-label="Open ${visual.title} full screen"><span class="infographic-image-wrap"><img src="${source}" alt="${visual.alt}" decoding="async"></span><span class="infographic-primary-copy"><small>${visual.kicker}</small><strong>${visual.title}</strong><span>${visual.description}</span><em>Tap to inspect full screen</em></span></button>`;
 }
 
 function viewerMarkup(){
@@ -55,7 +58,7 @@ function initInlineViewer(){
     opener=trigger;
     heading.textContent=visual.title;
     kicker.textContent=visual.kicker;
-    image.src=trigger.dataset.infographicSource||visual.src;
+    image.src=trigger.dataset.infographicSource||displaySource(visual);
     image.alt=visual.alt;
     reset();
     dialog.showModal();
@@ -86,7 +89,6 @@ export function initLandInfographics(){
 
   const blueprint=document.querySelector('#blueprint');
   if(blueprint){
-    const shell=blueprint.querySelector('.page-shell');
     const layers=blueprint.querySelector('.layers');
     const desk=blueprint.querySelector('.plan-desk');
     if(layers) layers.hidden=true;
@@ -104,35 +106,34 @@ export function initLandInfographics(){
     const description=trigger.querySelector('.infographic-primary-copy>span');
     const buttons=[...blueprint.querySelectorAll('#acre-buttons button')];
     const select=(acreage)=>{
-      const id=blueprintByAcreage[acreage],visual=visualById(id);
-      if(!visual)return;
+      const id=blueprintByAcreage[acreage],visual=visualById(id),source=approvedVisualSources[id];
+      if(!visual||!source)return;
       trigger.dataset.infographicVisual=id;
-      trigger.dataset.infographicSource=visual.src;
+      trigger.dataset.infographicSource=source;
       trigger.setAttribute('aria-label',`Open ${visual.title} full screen`);
-      image.src=visual.src;
+      image.src=source;
       image.alt=visual.alt;
       title.textContent=visual.title;
       description.textContent=visual.description;
     };
-    buttons.forEach((button)=>button.addEventListener('click',()=>select(button.dataset.acres)));
+    buttons.forEach((button)=>{
+      if(button.dataset.acres==='20'){
+        button.hidden=true;
+        button.disabled=true;
+        return;
+      }
+      button.addEventListener('click',()=>select(button.dataset.acres));
+    });
   }
 
+  // Keep the useful Food operating-depth detail, but do not publish the
+  // schematic SVG plate or the rejected decorative legacy raster as the
+  // primary infographic. A clean approved Food master will restore that plate.
   const food=document.querySelector('#production');
   if(food){
     const shell=food.querySelector('.page-shell');
-    const detail=food.querySelector('.field');
-    const ribbon=food.querySelector('.ribbon');
-    const visual=visualById('food');
-    if(shell){
-      shell.classList.remove('two');
-      shell.classList.add('food-infographic-layout');
-      const host=document.createElement('div');
-      host.className='infographic-host food-infographic-host';
-      host.innerHTML=plateButton(visual,'food-infographic-trigger');
-      shell.insertBefore(host,detail||null);
-    }
-    detail?.classList.add('food-detail-support');
-    if(ribbon) ribbon.hidden=true;
+    const oldPrimary=shell?.querySelector('.food-infographic-host');
+    oldPrimary?.remove();
   }
 
   initInlineViewer();
