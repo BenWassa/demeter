@@ -1,10 +1,28 @@
 # Field Atlas asset policy
 
-The live Field Atlas keeps stable generated SVG fallback URLs, while explicitly approved illustrated PNG masters can be preferred at runtime.
+`assets/visual-guides/` is the canonical home for approved/current infographic artwork. Raster infographic uploads must not remain at repository root.
 
-Five plates now use user-approved PNG masters. During `npm run build`, `scripts/build.mjs` copies those PNGs into `dist/assets/visual-guides/` alongside the generated SVG fallbacks. `src/approved-visuals.js` selects the PNGs for actual rendering without replacing the stable SVG `src` contract.
+## Current infographic masters
 
-Approved illustrated masters:
+### Blueprint — landscape family
+
+- `blueprint-3-acre-landscape.png`
+- `blueprint-10-acre-landscape.png`
+- `blueprint-20-acre-landscape.png`
+
+`blueprint-10-acre.png` is retained as the current runtime compatibility filename until the site wiring is migrated to the explicit `-landscape` name.
+
+### Blueprint — portrait family
+
+- `blueprint-3-acre-portrait.png`
+- `blueprint-10-acre-portrait.png`
+- `blueprint-20-acre-portrait.png`
+
+### Food
+
+- `food-production-pathways.png`
+
+### Other approved Field Atlas masters
 
 - `region-comparison.png`
 - `independence-spectrum.png`
@@ -12,15 +30,21 @@ Approved illustrated masters:
 - `homestead-year-southwest-ontario.png`
 - `homestead-year-coastal-bc.png`
 
-The remaining live plates are still generated directly as SVG by `scripts/render-visual-guides.mjs`:
+## Source / archive assets
 
-- `blueprint-3-acre.svg`
-- `blueprint-10-acre.svg`
-- `blueprint-20-acre.svg`
-- `food-production-pathways.svg`
+Superseded, rejected, or comparison-only variants belong under `assets/visual-guides-source/`, not beside current masters and never at repository root. Superseded blueprint uploads are retained under `assets/visual-guides-source/archive/` with descriptive filenames.
 
-The renderer continues to produce all nine SVG plates as deterministic fallbacks. The five audited PNG masters are copied and preferred only where the user explicitly selected replacement artwork.
+## Runtime policy
 
-Do not replace an approved illustrated master merely to force every plate through one renderer. Publication consistency comes from typography, palette, information hierarchy, restrained framing and family-level conventions; useful illustration and strong composition should be preserved.
+Generated SVG plates remain deterministic fallbacks. `src/approved-visuals.js` selects explicitly approved illustrated masters for the current product where wiring has been completed. Organizing a master into this folder does not by itself imply that the runtime has been switched to it.
 
-The Land / Food audit choices are already recorded. Their final source assets and responsive variants remain a separate implementation step; the temporary visual-audit bundle and 10-acre alternatives stay available until that work is complete.
+Do not replace a stronger approved illustrated master merely to force every plate through one renderer. Publication consistency comes from typography, palette, information hierarchy, restrained framing, and family-level conventions.
+
+## Upload rule
+
+When new infographic binaries are uploaded through GitHub and arrive with opaque `file_...` names:
+
+1. visually identify the asset before renaming;
+2. move approved/current artwork into `assets/visual-guides/` with a descriptive canonical filename;
+3. move genuinely useful superseded variants into `assets/visual-guides-source/archive/` or delete them if they have no reference value;
+4. leave no `.png`, `.jpg`, `.jpeg`, or `.webp` infographic files at repository root.
