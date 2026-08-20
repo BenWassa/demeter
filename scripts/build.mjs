@@ -5,7 +5,7 @@ import { renderVisualGuides, visualGuideFiles } from './render-visual-guides.mjs
 
 const root = resolve(import.meta.dirname, '..');
 const dist = resolve(root, 'dist');
-const pages=['index.html','regions.html','systems.html','land.html','visuals.html','plan.html','visual-audit.html'];
+const pages=['index.html','regions.html','systems.html','land.html','visuals.html','plan.html','visual-audit.html','review-new4.html'];
 const approvedRasterPlates=[
   'blueprint-10-acre.png',
   'region-comparison.png',
@@ -57,6 +57,12 @@ await mkdir(dist, { recursive: true });
 for (const file of [...pages, 'styles.css', 'app.js']) {
   await cp(resolve(root, file), resolve(dist, file));
 }
+for(const file of [
+  'file_000000008bd0820cb4cdc6496aa6dfb6.png',
+  'file_00000000ba3c820c944db9b352208891.png',
+  'file_00000000d11881fb802059881cb96426.png',
+  'file_00000000f2f081f7a7a20a7d178f6e50.png'
+]) await cp(resolve(root,file),resolve(dist,file));
 await cp(resolve(root, 'src'), resolve(dist, 'src'), { recursive: true });
 
 const rendered=await renderVisualGuides(dist);
