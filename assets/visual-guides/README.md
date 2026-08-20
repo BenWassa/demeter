@@ -1,6 +1,6 @@
 # Field Atlas asset policy
 
-`assets/visual-guides/` is the canonical home for approved/current infographic artwork. Raster infographic uploads must not remain at repository root.
+`assets/visual-guides/` is the canonical home for approved/current infographic artwork. Infographic uploads and source bundles must not remain at repository root.
 
 ## Current infographic masters
 
@@ -32,7 +32,7 @@
 
 ## Source / archive assets
 
-Superseded, rejected, or comparison-only variants belong under `assets/visual-guides-source/`, not beside current masters and never at repository root. Superseded blueprint uploads are retained under `assets/visual-guides-source/archive/` with descriptive filenames.
+Superseded, rejected, or comparison-only variants belong under `assets/visual-guides-source/`, not beside current masters and never at repository root. Superseded blueprint uploads are retained under `assets/visual-guides-source/archive/` with descriptive filenames. The legacy visual-guide bundle lives under `assets/visual-guides-source/legacy/`.
 
 ## Runtime policy
 
@@ -47,4 +47,4 @@ When new infographic binaries are uploaded through GitHub and arrive with opaque
 1. visually identify the asset before renaming;
 2. move approved/current artwork into `assets/visual-guides/` with a descriptive canonical filename;
 3. move genuinely useful superseded variants into `assets/visual-guides-source/archive/` or delete them if they have no reference value;
-4. leave no `.png`, `.jpg`, `.jpeg`, or `.webp` infographic files at repository root.
+4. leave no infographic image binaries or source bundles at repository root.
