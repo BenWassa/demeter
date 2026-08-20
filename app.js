@@ -16,6 +16,8 @@ if (legacyTarget) {
   document.documentElement.classList.add('v2-loading');
   import('./src/app-v2.js')
     .then(() => import('./src/a11y.js'))
+    .then(() => import('./src/land-infographics.js'))
+    .then((landModule) => landModule.initLandInfographics())
     .then(() => import('./src/visuals.js'))
     .then((visualModule) => {
       visualModule.initVisuals();
