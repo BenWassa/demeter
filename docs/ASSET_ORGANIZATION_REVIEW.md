@@ -1,1 +1,0 @@
-Temporary branch-only review note. This file exists only to make the asset-identification work explicit before the final cleanup commit. It must be removed before merge.
