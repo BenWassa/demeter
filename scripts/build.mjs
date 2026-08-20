@@ -75,7 +75,7 @@ for(const file of approvedRasterPlates){
 // The approved 3-acre raster master is retained inside the original visual
 // bundle. Extract that one known-good plate into the built site rather than
 // publishing the schematic SVG fallback.
-const legacyBundle=resolve(root,'demeter-visual-guides-assets.zip');
+const legacyBundle=resolve(root,'assets','visual-guides-source','legacy','demeter-visual-guides-assets.zip');
 await extractZipEntry(legacyBundle,'blueprint-3-acre.webp',resolve(liveVisualDir,'blueprint-3-acre.webp'));
 await access(resolve(liveVisualDir,'blueprint-3-acre.webp'));
 
