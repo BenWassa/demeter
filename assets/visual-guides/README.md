@@ -1,19 +1,26 @@
 # Field Atlas asset policy
 
-The live Field Atlas plates are generated as canonical SVG files during `npm run build` by `scripts/render-visual-guides.mjs`.
+The live Field Atlas keeps a stable nine-file SVG runtime contract, but the source of each plate may differ.
 
-This directory may retain raster references from earlier visual-development passes, but those files are **source/archive material only** and are not copied into `dist/` or referenced by the live application.
+Five plates now use user-approved illustrated PNG masters. During `npm run build`, `scripts/build.mjs` embeds those PNGs losslessly inside self-contained SVG wrappers at the existing runtime filenames. This preserves the approved artwork exactly while keeping the atlas viewer, tests and URLs stable.
 
-Runtime asset names are:
+Approved illustrated masters:
 
-- `region-comparison.svg`
+- `region-comparison.png` → `region-comparison.svg`
+- `independence-spectrum.png` → `independence-spectrum.svg`
+- `homestead-systems.png` → `homestead-systems.svg`
+- `homestead-year-southwest-ontario.png` → `homestead-year-southwest-ontario.svg`
+- `homestead-year-coastal-bc.png` → `homestead-year-coastal-bc.svg`
+
+The remaining live plates are generated directly as SVG by `scripts/render-visual-guides.mjs`:
+
 - `blueprint-3-acre.svg`
 - `blueprint-10-acre.svg`
 - `blueprint-20-acre.svg`
-- `independence-spectrum.svg`
-- `homestead-systems.svg`
 - `food-production-pathways.svg`
-- `homestead-year-southwest-ontario.svg`
-- `homestead-year-coastal-bc.svg`
 
-The generated SVG system deliberately keeps all nine plates in one publication grammar and guarantees the 3 / 10 / 20-acre blueprints use one shared template rather than diverging raster treatments.
+The renderer still produces all nine generated plates first so they remain available as deterministic references and fallbacks. The approved remakes then replace only the five explicitly selected plates in the build output.
+
+Do not replace an approved illustrated master merely to force every plate through one renderer. Publication consistency comes from typography, palette, information hierarchy, restrained framing and family-level conventions; useful illustration and strong composition should be preserved.
+
+The temporary visual-audit assets and 10-acre alternatives remain source/reference material until their separate audit decisions are implemented.
