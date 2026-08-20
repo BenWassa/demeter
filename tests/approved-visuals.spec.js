@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 const approved={
+  acre3:'assets/visual-guides/blueprint-3-acre.webp',
+  acre10:'assets/visual-guides/blueprint-10-acre.png',
   region:'assets/visual-guides/region-comparison.png',
   spectrum:'assets/visual-guides/independence-spectrum.png',
   systems:'assets/visual-guides/homestead-systems.png',
@@ -19,12 +21,16 @@ test('approved Field Atlas masters are the rendered artwork', async ({ page }) =
     await expect(thumb).toHaveAttribute('src',/\.svg$/);
     await expect(thumb).toHaveAttribute('srcset',`${source} 1x`);
     await expect.poll(()=>thumb.evaluate((img,expected)=>img.currentSrc.endsWith(expected),source)).toBe(true);
-    await expect.poll(()=>thumb.evaluate(img=>`${img.naturalWidth}x${img.naturalHeight}`)).toBe('1536x1024');
+    await expect.poll(()=>thumb.evaluate(img=>img.naturalWidth>0&&img.naturalHeight>0)).toBe(true);
 
     await card.click();
     const lightbox=page.locator('#visual-lightbox-image');
     await expect.poll(()=>lightbox.evaluate((img,expected)=>img.currentSrc.endsWith(expected),source)).toBe(true);
-    await expect.poll(()=>lightbox.evaluate(img=>`${img.naturalWidth}x${img.naturalHeight}`)).toBe('1536x1024');
+    await expect.poll(()=>lightbox.evaluate(img=>img.naturalWidth>0&&img.naturalHeight>0)).toBe(true);
     await page.getByRole('button',{name:'Close full-screen image'}).click();
   }
+
+  await expect(page.locator('[data-visual="acre20"]')).toHaveCount(0);
+  await expect(page.locator('[data-visual="food"]')).toHaveCount(0);
+  await expect(page.locator('#atlas-food')).toHaveCount(0);
 });

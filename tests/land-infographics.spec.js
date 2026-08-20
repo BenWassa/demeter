@@ -6,19 +6,19 @@ async function ready(page){
   await page.waitForSelector('#land-infographic-trigger');
 }
 
-test('Land and Food use Field Atlas infographics as primary visuals',async({page},testInfo)=>{
+test('Land uses approved infographic masters and withholds unapproved placeholders',async({page},testInfo)=>{
   await ready(page);
 
   await expect(page.locator('.plan-desk')).toBeHidden();
   await expect(page.locator('.layers')).toBeHidden();
   const landImage=page.locator('#land-infographic-trigger img');
-  await expect(landImage).toHaveAttribute('src','assets/visual-guides/blueprint-10-acre.svg');
+  await expect(landImage).toHaveAttribute('src','assets/visual-guides/blueprint-10-acre.png');
   await expect.poll(()=>landImage.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
 
   await page.getByRole('button',{name:'3 acres'}).click();
-  await expect(landImage).toHaveAttribute('src','assets/visual-guides/blueprint-3-acre.svg');
-  await page.getByRole('button',{name:'20 acres'}).click();
-  await expect(landImage).toHaveAttribute('src','assets/visual-guides/blueprint-20-acre.svg');
+  await expect(landImage).toHaveAttribute('src','assets/visual-guides/blueprint-3-acre.webp');
+  await expect.poll(()=>landImage.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+  await expect(page.getByRole('button',{name:'20 acres'})).toBeHidden();
 
   const trigger=page.locator('#land-infographic-trigger');
   await trigger.click();
@@ -29,10 +29,9 @@ test('Land and Food use Field Atlas infographics as primary visuals',async({page
   await page.getByRole('button',{name:'Close full-screen image'}).click();
   await expect(trigger).toBeFocused();
 
-  const foodImage=page.locator('#food-infographic-trigger img');
-  await expect(foodImage).toHaveAttribute('src','assets/visual-guides/food-production-pathways.svg');
-  await expect.poll(()=>foodImage.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
-  await expect(page.locator('.ribbon')).toBeHidden();
+  // Food keeps useful operating-depth detail but does not publish the rejected
+  // decorative raster or schematic SVG as a primary infographic.
+  await expect(page.locator('#food-infographic-trigger')).toHaveCount(0);
   await page.getByRole('tab',{name:'Household'}).click();
   await expect(page.locator('#food-name')).toHaveText('Household food system');
   await page.screenshot({path:`artifacts/${testInfo.project.name}-land-infographics.png`,fullPage:true});

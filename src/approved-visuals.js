@@ -1,4 +1,6 @@
 export const approvedVisualSources={
+  acre3:'assets/visual-guides/blueprint-3-acre.webp',
+  acre10:'assets/visual-guides/blueprint-10-acre.png',
   region:'assets/visual-guides/region-comparison.png',
   spectrum:'assets/visual-guides/independence-spectrum.png',
   systems:'assets/visual-guides/homestead-systems.png',
@@ -6,9 +8,14 @@ export const approvedVisualSources={
   yearBc:'assets/visual-guides/homestead-year-coastal-bc.png'
 };
 
+const suppressedVisuals=new Set(['acre20','food']);
+
 export function applyApprovedVisuals(){
   const lightbox=document.querySelector('#visual-lightbox-image');
   const dialog=document.querySelector('#visual-lightbox');
+
+  const homePreview=document.querySelector('.route-feature img');
+  if(homePreview) homePreview.src=approvedVisualSources.acre10;
 
   for(const [id,source] of Object.entries(approvedVisualSources)){
     const card=document.querySelector(`[data-visual="${id}"]`);
@@ -26,6 +33,26 @@ export function applyApprovedVisuals(){
       lightbox.dataset.approvedSource=source;
     });
   }
+
+  // Do not knowingly publish schematic placeholders or previously rejected
+  // artwork. The 20-acre and Food plates return only when approved infographic
+  // masters exist.
+  for(const id of suppressedVisuals){
+    const card=document.querySelector(`[data-visual="${id}"]`);
+    card?.closest('[role="listitem"]')?.remove();
+  }
+  const foodGroup=document.querySelector('#atlas-food');
+  if(foodGroup&&!foodGroup.querySelector('.visual-card')){
+    foodGroup.remove();
+    document.querySelector('.visual-index a[href="#atlas-food"]')?.remove();
+  }
+
+  const atlasIntro=document.querySelector('.visual-atlas-head>p:not(.marker)');
+  if(atlasIntro) atlasIntro.textContent='Read by question, then open any plate for full-screen inspection. Only approved infographic masters are shown live; the 20-acre and Food plates return when their clean replacements are ready.';
+  const seasonsIndex=document.querySelector('.visual-index a[href="#atlas-seasons"] span');
+  if(seasonsIndex) seasonsIndex.textContent='04';
+  const seasonsGroupNumber=document.querySelector('#atlas-seasons .visual-group-head small');
+  if(seasonsGroupNumber) seasonsGroupNumber.textContent='04';
 
   dialog?.addEventListener('close',()=>{
     if(!lightbox) return;
