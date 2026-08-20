@@ -18,12 +18,12 @@ test('approved Field Atlas masters are the rendered artwork', async ({ page }) =
     const thumb=card.locator('img');
     await expect(thumb).toHaveAttribute('src',/\.svg$/);
     await expect(thumb).toHaveAttribute('srcset',`${source} 1x`);
-    await expect.poll(()=>thumb.evaluate(img=>img.currentSrc.endsWith(source))).toBe(true);
+    await expect.poll(()=>thumb.evaluate((img,expected)=>img.currentSrc.endsWith(expected),source)).toBe(true);
     await expect.poll(()=>thumb.evaluate(img=>`${img.naturalWidth}x${img.naturalHeight}`)).toBe('1536x1024');
 
     await card.click();
     const lightbox=page.locator('#visual-lightbox-image');
-    await expect.poll(()=>lightbox.evaluate(img=>img.currentSrc.endsWith(source))).toBe(true);
+    await expect.poll(()=>lightbox.evaluate((img,expected)=>img.currentSrc.endsWith(expected),source)).toBe(true);
     await expect.poll(()=>lightbox.evaluate(img=>`${img.naturalWidth}x${img.naturalHeight}`)).toBe('1536x1024');
     await page.getByRole('button',{name:'Close full-screen image'}).click();
   }
