@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "verify": "node scripts/verify.mjs",
+    "verify": "node scripts/verify.mjs && node scripts/verify-approved-visuals.mjs",
     "serve": "npm run build && DEMETER_ROOT=dist node scripts/server.mjs",
     "test": "playwright test"
   },
