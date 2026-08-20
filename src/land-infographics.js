@@ -102,6 +102,7 @@ export function initLandInfographics(){
 
     const trigger=host.querySelector('#land-infographic-trigger');
     const image=trigger.querySelector('img');
+    const kickerLabel=trigger.querySelector('.infographic-primary-copy small');
     const title=trigger.querySelector('.infographic-primary-copy strong');
     const description=trigger.querySelector('.infographic-primary-copy>span');
     const buttons=[...blueprint.querySelectorAll('#acre-buttons button')];
@@ -113,6 +114,7 @@ export function initLandInfographics(){
       trigger.setAttribute('aria-label',`Open ${visual.title} full screen`);
       image.src=source;
       image.alt=visual.alt;
+      kickerLabel.textContent=visual.kicker;
       title.textContent=visual.title;
       description.textContent=visual.description;
     };
