@@ -3,7 +3,7 @@
 **Status:** canonical publication system  
 **Established:** 2026-08-19  
 **Audit correction:** 2026-08-20  
-**Scope:** `visuals.html`, `src/visuals.js`, `src/visual-guides.css`, source masters under `assets/visual-guides/`, and built plates under `dist/assets/visual-guides/`
+**Scope:** `visuals.html`, `src/visuals.js`, `src/approved-visuals.js`, `src/visual-guides.css`, source masters under `assets/visual-guides/`, and built plates under `dist/assets/visual-guides/`
 
 ## Thesis
 
@@ -31,12 +31,12 @@ Avoid visual flattening. A clean plate may still be richly illustrated.
 
 ## Asset policy
 
-The live atlas keeps stable `.svg` runtime filenames so the viewer and routes do not care how a plate was authored.
+The generated `.svg` files remain stable fallback URLs for the nine atlas concepts. Approved illustrated masters can coexist with those fallbacks as first-class source-controlled PNG assets.
 
 Two source paths are valid:
 
-1. **Approved illustrated master** — a source-controlled PNG selected through the visual audit. The build embeds it losslessly into a self-contained SVG wrapper.
-2. **Generated information plate** — produced directly as SVG by `scripts/render-visual-guides.mjs`.
+1. **Approved illustrated master** — a source-controlled PNG selected through the visual audit. The build copies it directly into the publication and `src/approved-visuals.js` prefers it for rendering.
+2. **Generated information plate** — produced directly as SVG by `scripts/render-visual-guides.mjs` and used as the live plate where no approved raster master has superseded it.
 
 Approved illustrated masters currently drive:
 
@@ -71,6 +71,8 @@ Desktop uses a curated editorial layout. Mobile keeps the five groups and uses h
 
 - Preserve every plate's natural aspect ratio in the library.
 - Never force `object-fit: cover` or arbitrary card crops on infographic content.
+- Approved raster masters should be served directly rather than recompressed into derivative assets.
+- Generated SVG sources remain valid resilient fallbacks.
 - Full-screen inspection remains part of the product contract:
   - pinch to zoom on touch;
   - one-finger pan when magnified;
