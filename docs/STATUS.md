@@ -1,8 +1,8 @@
 # Project Demeter — Build Status
 
 **Release branch:** `main`  
-**Last updated:** 2026-08-19  
-**Current release:** V1.3 — coherent Field Atlas publication system.
+**Last updated:** 2026-08-20  
+**Current release:** V1.4 — approved responsive Field Atlas masters.
 
 ## Current product
 
@@ -16,19 +16,20 @@ Project Demeter is a responsive Canadian homestead field atlas for comparing reg
 | Research model + regional evidence | ✅ | SW Ontario, Fraser Valley, Vancouver Island with dated source model |
 | Fit Lab | ✅ | Career anchor + weighted preferences rank current regions transparently |
 | Systems | ✅ | Water, wastewater, power and heat dependency / resilience models |
-| Land | ✅ | Distinct 3-, 10- and 20-acre interactive plans |
-| Food + livestock | ✅ | Production depth, workload and livestock friction |
+| Land | ✅ | 3-, 10- and 20-acre infographic-first plans plus supporting planning detail |
+| Food + livestock | ✅ | Food Production Pathways infographic plus production-depth, workload and livestock detail |
 | Acquisition + roadmap | ✅ | Fixer, turnkey, raw-land pathways + phased transition |
 | Field Atlas IA | ✅ | Curated Place / Land / Systems / Food / Seasons reference library |
-| Infographic system | ✅ | Nine canonical SVG plates generated from one restrained publication grammar |
-| Blueprint family | ✅ | 3 / 10 / 20-acre sheets share one template; correct standalone 20-acre replacement is live |
+| Infographic system | ✅ | Nine live approved illustrated plates with deterministic SVG fallbacks |
+| Blueprint family | ✅ | 3 / 10 / 20-acre landscape masters plus matched portrait mobile variants |
 | Full-screen image viewer | ✅ | Zoom, pan, keyboard controls, focus restoration and real-image decode QA |
 | Mobile direct manipulation | ✅ | Pinch-to-zoom, one-finger pan when magnified, double-tap zoom/reset; explicit controls retained |
 | Mobile atlas navigation | ✅ | Grouped horizontal snap rails prevent a giant undifferentiated image stack |
+| Responsive infographic selection | ✅ | Landscape blueprint art on larger viewports; portrait masters at 720px and below |
 | Information architecture | ✅ | Short Home hub + focused Regions, Systems, Land, Visuals and Plan workspaces |
 | Legacy deep links | ✅ | Old `/#section` links route to their focused workspace |
 | Responsive / accessibility | ✅ | Keyboard tabs, focus visibility, reduced motion, forced colors, touch-target floors, overflow regression tests |
-| CI / browser QA | ✅ | Six-page build; desktop + mobile workspace tests; canonical asset decode; real two-finger Chromium pinch test |
+| CI / browser QA | ✅ | Desktop + mobile workspace tests, approved asset decode, and real two-finger Chromium pinch gates |
 | GitHub Pages | ✅ configured | Actions deploy the built `dist/` to `https://benwassa.github.io/demeter/` |
 
 ## Release history
@@ -47,32 +48,41 @@ PR #3 delivered gesture-native mobile viewing, shorter Home, focused workspace U
 
 ### V1.3 — Field Atlas publication rebuild
 
-Issue #5 applies the critique → simplify → adapt → harden → polish process to the atlas as a publication rather than a set of isolated images.
+Issue #5 applied the critique → simplify → adapt → harden → polish process to the atlas as a publication rather than a set of isolated images.
 
 Material changes:
 
 1. **Curated information architecture** — Place, Land, Systems, Food and Seasons each answer a specific planning question.
-2. **Light field-atlas surface** — the separate dark generic gallery has been retired.
-3. **Natural image ratios** — cards no longer force infographic content through 4:5 / 3:2 crops.
-4. **Canonical visual grammar** — nine runtime SVG plates are rendered from `scripts/render-visual-guides.mjs`; styling and semantic accents are shared rather than improvised plate-by-plate.
-5. **Blueprint consistency** — all three acreage sheets use one renderer/template and the corrected 20-acre smallholding is restored as a live standalone plate.
-6. **Metaphor repair** — independence dimensions remain separate; food becomes a pathway; seasonal work becomes an explicit timeline using labour intensity and systems criticality rather than gauges.
-7. **Legacy raster retirement** — the opaque ZIP bundle and raster patching are no longer part of the runtime build. Historical raster files are source/archive references only.
-8. **Stronger QA contract** — browser tests assert the five groups, all nine SVG decodes, 20-acre visibility, uncropped natural ratios, mobile snap navigation and preserved zoom/pan behavior.
+2. **Light field-atlas surface** — the separate dark generic gallery was retired.
+3. **Natural image ratios** — cards no longer force infographic content through arbitrary crops.
+4. **Canonical visual grammar** — nine deterministic SVG plates provide a stable fallback publication system.
+5. **Metaphor repair** — independence dimensions remain separate; food becomes a pathway; seasonal work becomes an explicit timeline using labour intensity and systems criticality rather than gauges.
+6. **Stronger QA contract** — browser tests assert grouped IA, image decode, uncropped natural ratios, mobile snap navigation and preserved zoom/pan behavior.
 
 The finalized publication rules are documented in `docs/FIELD_ATLAS_VISUAL_SYSTEM.md`.
 
-## V1.3 quality gate
+### V1.4 — approved infographic master integration
 
-- [x] Canonical nine-plate output defined in one renderer.
-- [x] 3 / 10 / 20-acre plates share one blueprint template.
-- [x] Known-bad 20-acre runtime suppression removed.
-- [x] No live atlas reference uses the legacy WebP / PNG bundle.
+PR #13 organized the final raster masters and removed opaque asset uploads from repository root. The following integration pass makes those masters the live artwork:
+
+1. **Complete acreage set** — clean 3-, 10- and 20-acre landscape blueprints are all live.
+2. **Responsive blueprint family** — matching portrait 3-, 10- and 20-acre sheets are selected on mobile without changing the desktop composition.
+3. **Food restored** — the approved Food Production Pathways infographic returns to the Field Atlas and becomes the primary Food visual in the Land workspace.
+4. **No known-bad suppression** — 20-acre and Food no longer rely on hidden placeholders or rejected legacy artwork.
+5. **Legacy bundle isolated** — the old ZIP remains audit-only under `assets/visual-guides-source/legacy/`; no live plate is extracted from it.
+6. **Asset contract hardened** — all approved masters are copied and verified by build/CI, with explicit responsive-source tests.
+
+## V1.4 quality gate
+
+- [x] All nine Field Atlas subjects are live.
+- [x] 3 / 10 / 20-acre landscape masters share the approved clean family.
+- [x] 3 / 10 / 20-acre portrait masters are used at mobile widths.
+- [x] Food Production Pathways is live in both Field Atlas and Land.
+- [x] Known-bad 20-acre and Food suppression is removed.
 - [x] Natural image ratio is preserved in library cards.
-- [x] Full-screen viewer interaction contract retained.
-- [x] Mobile grouped rails and no-document-overflow assertions added.
-- [x] Final visual-system rules documented.
-- [x] Branch CI / exact browser screenshots verified before merge.
+- [x] Full-screen viewer interaction contract is retained.
+- [x] Mobile grouped rails and document-overflow assertions remain in CI.
+- [x] Legacy visual bundle is audit-only.
 
 ## Next product depth
 
