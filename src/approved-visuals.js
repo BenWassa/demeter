@@ -14,6 +14,9 @@ export function applyApprovedVisuals(){
   const lightbox=document.querySelector('#visual-lightbox-image');
   const dialog=document.querySelector('#visual-lightbox');
 
+  const homePreview=document.querySelector('.route-feature img');
+  if(homePreview) homePreview.src=approvedVisualSources.acre10;
+
   for(const [id,source] of Object.entries(approvedVisualSources)){
     const card=document.querySelector(`[data-visual="${id}"]`);
     const thumbnail=card?.querySelector('img');
