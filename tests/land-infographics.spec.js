@@ -6,7 +6,7 @@ async function ready(page){
   await page.waitForSelector('#land-infographic-trigger');
 }
 
-test('Land and Food use Field Atlas infographics as primary visuals',async({page})=>{
+test('Land and Food use Field Atlas infographics as primary visuals',async({page},testInfo)=>{
   await ready(page);
 
   await expect(page.locator('.plan-desk')).toBeHidden();
@@ -35,6 +35,7 @@ test('Land and Food use Field Atlas infographics as primary visuals',async({page
   await expect(page.locator('.ribbon')).toBeHidden();
   await page.getByRole('tab',{name:'Household'}).click();
   await expect(page.locator('#food-name')).toHaveText('Household food system');
+  await page.screenshot({path:`artifacts/${testInfo.project.name}-land-infographics.png`,fullPage:true});
 });
 
 test('mobile Land infographic supports pinch zoom',async({page,context},testInfo)=>{
